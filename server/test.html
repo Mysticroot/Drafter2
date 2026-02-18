@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Anime Draft Arena – Backend Test</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+        display: flex;
+      }
+
+      .left {
+        flex: 1;
+      }
+
+      .right {
+        width: 320px;
+        margin-left: 20px;
+        border-left: 2px solid #ddd;
+        padding-left: 15px;
+      }
+
+      button {
+        margin: 5px;
+        padding: 8px;
+      }
+
+      select {
+        margin: 5px;
+        padding: 5px;
+      }
+
+      #output {
+        white-space: pre-wrap;
+        background: #f4f4f4;
+        padding: 10px;
+        margin-top: 10px;
+        max-height: 320px;
+        overflow-y: auto;
+      }
+
+      .player-box {
+        margin-bottom: 20px;
+      }
+
+      .player-box h4 {
+        margin-bottom: 5px;
+        border-bottom: 1px solid #ccc;
+      }
+
+      ul {
+        padding-left: 18px;
+      }
+
+      li {
+        font-size: 13px;
+        margin-bottom: 4px;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- LEFT SIDE -->
+    <div class="left">
+      <h2>Anime Draft Arena – Backend Test</h2>
+
+      <button onclick="createRoom()">Create Room</button>
+      <button onclick="joinRoom()">Join Room</button>
+      <button onclick="draw()">Draw</button>
+      <button onclick="skip()">Skip</button>
+
+      <br /><br />
+
+      <label>Assign Role:</label>
+      <select id="roleSelect">
+        <option value="CAPTAIN">CAPTAIN</option>
+        <option value="VICE_CAPTAIN">VICE_CAPTAIN</option>
+        <option value="TANK">TANK</option>
+        <option value="HEALER">HEALER</option>
+        <option value="SUPPORT">SUPPORT</option>
+      </select>
+      <button onclick="assign()">Assign</button>
+
+      <br /><br />
+
+      <label>Swap Role A:</label>
+      <select id="swapA">
+        <option value="CAPTAIN">CAPTAIN</option>
+        <option value="VICE_CAPTAIN">VICE_CAPTAIN</option>
+        <option value="TANK">TANK</option>
+        <option value="HEALER">HEALER</option>
+        <option value="SUPPORT">SUPPORT</option>
+      </select>
+
+      <label>Swap Role B:</label>
+      <select id="swapB">
+        <option value="CAPTAIN">CAPTAIN</option>
+        <option value="VICE_CAPTAIN">VICE_CAPTAIN</option>
+        <option value="TANK">TANK</option>
+        <option value="HEALER">HEALER</option>
+        <option value="SUPPORT">SUPPORT</option>
+      </select>
+
+      <button onclick="swap()">Swap Roles</button>
+      <button onclick="finalizeSwap()">Finalize Swap</button>
+
+      <pre id="output"></pre>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right">
+      <div class="player-box">
+        <h4>Player 1 Cards</h4>
+        <ul id="p1Cards"></ul>
+      </div>
+
+      <div class="player-box">
+        <h4>Player 2 Cards</h4>
+        <ul id="p2Cards"></ul>
+      </div>
+    </div>
+
+    <!-- SOCKET -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+      const socket = io("http://localhost:5000");
+
+      let currentMatchState = null;
+
+      socket.on("connect", () => {
+        log("Connected: " + socket.id);
+      });
+
+      socket.on("room:created", (data) => {
+        log("Room Created: " + JSON.stringify(data));
+        window.roomId = data.roomId;
+      });
+
+      socket.on("match:start", (data) => {
+        currentMatchState = data.matchState;
+        updateCardLists(currentMatchState);
+        log("Match Started:");
+        log(JSON.stringify(currentMatchState, null, 2));
+      });
+
+      socket.on("draft:card", (card) => {
+        log("Card Drawn:");
+        log(JSON.stringify(card, null, 2));
+      });
+
+      socket.on("draft:update", (data) => {
+        currentMatchState = data.matchState;
+        updateCardLists(currentMatchState);
+        log("Draft Updated:");
+        log(JSON.stringify(currentMatchState, null, 2));
+      });
+
+      socket.on("swap:update", (data) => {
+        currentMatchState = data.matchState;
+        updateCardLists(currentMatchState);
+        log("Swap Updated:");
+        log(JSON.stringify(currentMatchState, null, 2));
+      });
+
+      socket.on("match:update", (data) => {
+        currentMatchState = data.matchState;
+        updateCardLists(currentMatchState);
+        log("Match Updated:");
+        log(JSON.stringify(currentMatchState, null, 2));
+      });
+
+      socket.on("error", (err) => {
+        log("Error: " + JSON.stringify(err));
+      });
+
+      function createRoom() {
+        socket.emit("room:create");
+      }
+
+      function joinRoom() {
+        const id = prompt("Enter Room ID:");
+        socket.emit("room:join", { roomId: id });
+      }
+
+      function draw() {
+        socket.emit("draft:draw");
+      }
+
+      function skip() {
+        socket.emit("draft:skip");
+      }
+
+      function assign() {
+        const role = document.getElementById("roleSelect").value;
+        socket.emit("draft:assign", { role });
+      }
+
+      function swap() {
+        const roleA = document.getElementById("swapA").value;
+        const roleB = document.getElementById("swapB").value;
+        socket.emit("swap:roles", { roleA, roleB });
+      }
+
+      function finalizeSwap() {
+        socket.emit("swap:finalize");
+      }
+
+      function updateCardLists(matchState) {
+        if (!matchState || !matchState.players) return;
+
+        const p1List = document.getElementById("p1Cards");
+        const p2List = document.getElementById("p2Cards");
+
+        p1List.innerHTML = "";
+        p2List.innerHTML = "";
+
+        matchState.players.forEach((player, index) => {
+          const list = index === 0 ? p1List : p2List;
+
+          if (!player.team) return;
+
+          Object.entries(player.team).forEach(([role, slot]) => {
+            if (slot.cardId) {
+              const li = document.createElement("li");
+              li.textContent = `${role}: ${slot.cardId}`;
+              list.appendChild(li);
+            }
+          });
+        });
+      }
+
+      function log(message) {
+        const output = document.getElementById("output");
+        output.textContent += message + "\n\n";
+        output.scrollTop = output.scrollHeight;
+      }
+    </script>
+  </body>
+</html>
