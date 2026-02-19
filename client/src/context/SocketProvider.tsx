@@ -1,43 +1,54 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { SocketContext } from "./SocketContext";
 import type { MatchState } from "../types/game";
 
-interface MatchUpdatePayload {
+interface MatchStartPayload {
   matchState: MatchState;
 }
 
+interface RoomPayload {
+  roomId: string;
+}
+
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // create socket once
+  const [socket] = useState<Socket>(() =>
+    io("http://localhost:5000", {
+      transports: ["websocket", "polling"], // important fallback
+    }),
+  );
+
   const [matchState, setMatchState] = useState<MatchState | null>(null);
+  const [roomId, setRoomId] = useState<string | null>(null);
 
   useEffect(() => {
-    const s = io("http://localhost:5000");
-    setSocket(s);
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket.id);
+    });
 
-    s.on("match:start", (d: MatchUpdatePayload) => setMatchState(d.matchState));
-    s.on("draft:update", (d: MatchUpdatePayload) =>
-      setMatchState(d.matchState),
-    );
-    s.on("swap:update", (d: MatchUpdatePayload) => setMatchState(d.matchState));
-    s.on("match:update", (d: MatchUpdatePayload) =>
-      setMatchState(d.matchState),
-    );
+    socket.on("connect_error", (err) => {
+      console.error("❌ Socket connect error:", err.message);
+    });
 
-    s.on("error", (e: unknown) => {
-      if (typeof e === "object" && e && "message" in e) {
-        console.error("Server:", (e as { message: string }).message);
-      }
+    socket.on("room:created", (data: RoomPayload) => {
+      console.log("ROOM CREATED EVENT:", data);
+      setRoomId(data.roomId);
+    });
+
+    socket.on("match:start", (data: MatchStartPayload) => {
+      setMatchState(data.matchState);
     });
 
     return () => {
-      s.disconnect();
+      // IMPORTANT: do NOT disconnect here in dev strict mode
+      socket.off();
     };
-  }, []);
-
-  const value = useMemo(() => ({ socket, matchState }), [socket, matchState]);
+  }, [socket]);
 
   return (
-    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, matchState, roomId }}>
+      {children}
+    </SocketContext.Provider>
   );
 }
