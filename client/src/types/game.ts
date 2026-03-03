@@ -9,19 +9,21 @@ export interface Card {
   stats: Record<Role, number>;
 }
 
+
 export interface Player {
   id: string;
   socketId: string;
   skipUsed: boolean;
   hasSwapped: boolean;
   team: Partial<Record<Role, Card>>;
+  pendingCard: Card | null; // ✅ ADD THIS
 }
 
 export interface MatchState {
   id: string;
   phase: MatchPhase;
+  deck: Card[];
   players: Player[];
   currentTurnPlayerId: string | null;
-  pendingCard: Card | null;
   winner: string | null;
 }

@@ -19,8 +19,9 @@ export interface Player {
   id: string;
   socketId: string;
   skipUsed: boolean;
-  team: Partial<Record<Role, Card>>;
   hasSwapped: boolean;
+  team: Partial<Record<Role, Card>>;
+  pendingCard: Card | null; // ✅ ADD THIS
 }
 
 // export interface MatchState {
@@ -40,7 +41,5 @@ export interface MatchState {
   currentTurnPlayerId: string | null;
   winner: string | null;
 
-  // NEW
-  pendingCard: Card | null;
 }
 

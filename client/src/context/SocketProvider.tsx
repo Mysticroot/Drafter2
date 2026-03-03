@@ -3,51 +3,55 @@ import { io, Socket } from "socket.io-client";
 import { SocketContext } from "./SocketContext";
 import type { MatchState } from "../types/game";
 
-interface MatchStartPayload {
-  matchState: MatchState;
-}
-
-interface RoomPayload {
-  roomId: string;
-}
-
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  // create socket once
   const [socket] = useState<Socket>(() =>
     io("http://localhost:5000", {
-      transports: ["websocket", "polling"], // important fallback
+      transports: ["websocket", "polling"],
     }),
   );
 
   const [matchState, setMatchState] = useState<MatchState | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
+  const [playerId, setPlayerId] = useState<string | null>(null);
+useEffect(() => {
+  socket.on("connect", () => {
+    console.log("✅ Socket connected:", socket.id);
+  });
 
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("✅ Socket connected:", socket.id);
-    });
+  socket.on("room:created", ({ roomId, playerId }) => {
+    setRoomId(roomId);
+    setPlayerId(playerId);
+  });
 
-    socket.on("connect_error", (err) => {
-      console.error("❌ Socket connect error:", err.message);
-    });
+  // ✅ JOINER RECEIVES PLAYER ID HERE
+  socket.on("player:ready", ({ playerId }) => {
+    setPlayerId(playerId);
+  });
 
-    socket.on("room:created", (data: RoomPayload) => {
-      console.log("ROOM CREATED EVENT:", data);
-      setRoomId(data.roomId);
-    });
+  socket.on("match:start", ({ matchState }) => {
+    setMatchState(matchState);
+  });
 
-    socket.on("match:start", (data: MatchStartPayload) => {
-      setMatchState(data.matchState);
-    });
+  socket.on("draft:update", ({ matchState }) => {
+    console.log("📥 [FRONTEND] draft:update received");
+    console.log("📦 [FRONTEND] matchState:", matchState);
+    setMatchState(matchState);
+  });
 
-    return () => {
-      // IMPORTANT: do NOT disconnect here in dev strict mode
-      socket.off();
-    };
-  }, [socket]);
+  return () => {
+    socket.off();
+  };
+}, [socket]);
 
   return (
-    <SocketContext.Provider value={{ socket, matchState, roomId }}>
+    <SocketContext.Provider
+      value={{
+        socket,
+        matchState,
+        roomId,
+        playerId,
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );

@@ -4,13 +4,10 @@ import { matchService } from "../services/matchService.js";
 import { playerService } from "../services/playerService.js";
 
 export function registerLobbyHandlers(io: Server, socket: Socket) {
-  // -------------------
-  // Create Room
-  // -------------------
+  // ---------------- CREATE ROOM ----------------
   socket.on("room:create", () => {
     try {
       const room = roomService.createRoom(socket.id);
-
       socket.join(room.id);
 
       const match = matchService.getMatch(room.matchId);
@@ -30,13 +27,10 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     }
   });
 
-  // -------------------
-  // Join Room
-  // -------------------
+  // ---------------- JOIN ROOM ----------------
   socket.on("room:join", ({ roomId }) => {
     try {
       const room = roomService.joinRoom(roomId, socket.id);
-
       socket.join(room.id);
 
       const match = matchService.getMatch(room.matchId);
@@ -50,6 +44,12 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
 
       playerService.registerPlayer(player.id, socket.id);
 
+      // ✅ SEND PLAYER ID TO JOINER ONLY
+      socket.emit("player:ready", {
+        playerId: player.id,
+      });
+
+      // ✅ START MATCH FOR BOTH
       io.to(room.id).emit("match:start", {
         matchState: match.getState(),
       });

@@ -1,63 +1,136 @@
+import { useState } from "react";
 import PlayerPanel from "./PlayerPanel";
+import { useSocket } from "../hooks/useSocket";
+import type { Role } from "../types/game";
 
 export default function GameBoard() {
+  const { socket, matchState, playerId } = useSocket();
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+
+  if (!matchState || !playerId) {
+    return (
+      <div className="min-h-screen bg-neutral-900 text-white flex items-center justify-center">
+        Waiting for opponent…
+      </div>
+    );
+  }
+
+  const myPlayer = matchState.players.find((p) => p.id === playerId);
+  if (!myPlayer) return null;
+
+  const pendingCard = myPlayer.pendingCard ?? null;
+
+  const isMyTurn = matchState.currentTurnPlayerId === playerId;
+
+  const canDraw = matchState.phase === "DRAFT" && isMyTurn && !pendingCard;
+
+  const canAssign = !!pendingCard && !!selectedRole && isMyTurn;
+
+  const canSkip =
+    matchState.phase === "DRAFT" &&
+    isMyTurn &&
+    !!pendingCard &&
+    !myPlayer.skipUsed;
+
+ const handleSkip = () => {
+   if (!socket) return;
+
+   setSelectedRole(null);
+   socket.emit("draft:skip");
+ };
+
+
+  const handleDraw = () => {
+    if (!socket) return;
+    setSelectedRole(null);
+    socket.emit("draft:draw");
+  };
+
+  const handleAssign = () => {
+    if (!socket || !selectedRole) return;
+
+    socket.emit("draft:assign", {
+      role: selectedRole,
+    });
+
+
+    setSelectedRole(null);
+  };
+
   return (
     <div className="min-h-screen bg-neutral-900 text-white flex flex-col">
-      {/* ---------- Header ---------- */}
+      {/* HEADER */}
       <header className="h-16 flex items-center justify-between px-6 border-b border-neutral-700">
-        <div className="text-sm text-neutral-400">Phase: DRAFT</div>
-
-        <div className="text-sm font-medium text-emerald-400">Your Turn</div>
+        <div>Phase: {matchState.phase}</div>
+        <div className={isMyTurn ? "text-emerald-400" : "text-neutral-500"}>
+          {isMyTurn ? "Your Turn" : "Opponent Turn"}
+        </div>
       </header>
 
-      {/* ---------- Main Board ---------- */}
+      {/* MAIN */}
       <main className="flex-1 grid grid-cols-3 gap-6 p-6">
-        {/* ----- LEFT: YOU ----- */}
-        {/* ----- LEFT: YOU ----- */}
-        <section className="flex flex-col gap-4">
-          <PlayerPanel title="You" variant="you" />
+        <PlayerPanel
+          title="You"
+          variant="you"
+          selectedRole={selectedRole}
+          setSelectedRole={setSelectedRole}
+          isMyTurn={isMyTurn}
+        />
 
-          {/* Assign Button (UI only for now) */}
-          <button className="mt-2 px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 transition text-sm font-medium">
-            Assign Card
-          </button>
-        </section>
-
-        {/* ----- CENTER: ROLES + POOL ----- */}
-        <section className="flex flex-col items-center gap-12 mt-12">
-          {/* Roles (always visible) */}
-          <div className="flex flex-col gap-3 w-40">
-            {["Captain", "Vice Captain", "Tank", "Healer", "Support"].map(
-              (role) => (
-                <div
-                  key={role}
-                  className="h-10 rounded border border-neutral-700 bg-neutral-800 flex items-center justify-center text-sm text-neutral-400"
-                >
-                  {role}
-                </div>
-              ),
+        {/* CENTER */}
+        <section className="flex flex-col items-center gap-8">
+          <div className="w-80 h-48 border-2 border-dashed border-neutral-600 flex items-center justify-center">
+            {pendingCard ? (
+              <div className="text-center">
+                <p className="text-yellow-400 font-semibold">
+                  {pendingCard.name}
+                </p>
+                <p className="text-sm text-neutral-400">{pendingCard.anime}</p>
+              </div>
+            ) : (
+              "No Card Drawn"
             )}
           </div>
 
-          {/* Pool / Pending Card */}
-          <div className="w-full max-w-md h-44 rounded border-2 border-dashed border-neutral-600 flex items-center justify-center text-neutral-400">
-            Pool / Pending Card
+          <div className="flex gap-4">
+            <button
+              disabled={!canAssign}
+              onClick={handleAssign}
+              className="px-6 py-3 rounded bg-emerald-600 disabled:opacity-50"
+            >
+              Assign Card
+            </button>
+
+            <button
+              disabled={!canSkip}
+              onClick={handleSkip}
+              className="px-6 py-3 rounded bg-red-600 disabled:opacity-50"
+            >
+              {myPlayer.skipUsed ? "Skip Already Used" : "Skip"}
+            </button>
           </div>
+
+          <button
+            disabled={!canDraw}
+            onClick={handleDraw}
+            className="px-6 py-3 rounded bg-indigo-600 disabled:opacity-50"
+          >
+            Draw Card
+          </button>
         </section>
 
-        {/* ----- RIGHT: OPPONENT ----- */}
         <PlayerPanel title="Opponent" variant="opponent" />
       </main>
 
-      {/* ---------- Action Bar ---------- */}
-      <footer className="h-20 border-t border-neutral-700 flex items-center justify-center gap-4">
-        <button className="px-6 py-3 rounded bg-indigo-600 hover:bg-indigo-700 transition">
+      {/* FOOTER */}
+      <footer className="h-20 border-t border-neutral-700 flex items-center justify-center">
+        {/* <button
+          disabled={!canDraw}
+          onClick={handleDraw}
+          className="px-6 py-3 rounded bg-indigo-600 disabled:opacity-50"
+        >
           Draw Card
-        </button>
-
-        <button className="px-6 py-3 rounded bg-neutral-700 hover:bg-neutral-600 transition">
-          Skip / Swap
-        </button>
+        </button> */}
       </footer>
     </div>
   );

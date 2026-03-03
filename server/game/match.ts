@@ -16,7 +16,6 @@ export class Match {
       players: [],
       currentTurnPlayerId: null,
       winner: null,
-      pendingCard: null, // NEW
     };
   }
 
@@ -25,7 +24,7 @@ export class Match {
   }
 
   // -------------------
-  // Add player
+  // Add Player
   // -------------------
   addPlayer(socketId: string): Player {
     if (this.state.players.length >= 2) {
@@ -38,6 +37,7 @@ export class Match {
       skipUsed: false,
       team: {},
       hasSwapped: false,
+      pendingCard: null, // ✅ belongs to player
     };
 
     this.state.players.push(player);
@@ -60,9 +60,6 @@ export class Match {
     this.state.currentTurnPlayerId = this.state.players[randomIndex].id;
   }
 
-  // -------------------
-  // Current Player
-  // -------------------
   private getCurrentPlayer(): Player {
     const player = this.state.players.find(
       (p) => p.id === this.state.currentTurnPlayerId,
@@ -82,12 +79,14 @@ export class Match {
     if (playerId !== this.state.currentTurnPlayerId)
       throw new Error("Not your turn");
 
-    if (this.state.pendingCard) throw new Error("Resolve current card first");
+    const player = this.getCurrentPlayer();
+
+    if (player.pendingCard) throw new Error("Resolve current card first");
 
     const card = drawCard(this.state.deck);
     if (!card) throw new Error("Deck empty");
 
-    this.state.pendingCard = card;
+    player.pendingCard = card;
 
     return card;
   }
@@ -101,22 +100,21 @@ export class Match {
     if (playerId !== this.state.currentTurnPlayerId)
       throw new Error("Not your turn");
 
-    if (!this.state.pendingCard) throw new Error("No card to assign");
-
     const player = this.getCurrentPlayer();
+
+    if (!player.pendingCard) throw new Error("No card to assign");
 
     if (player.team[role]) throw new Error("Role already filled");
 
-    player.team[role] = this.state.pendingCard;
-
-    this.state.pendingCard = null;
+    player.team[role] = player.pendingCard;
+    player.pendingCard = null;
 
     this.switchTurn();
     this.checkDraftCompletion();
   }
 
   // -------------------
-  // Skip (discard + redraw)
+  // Skip
   // -------------------
   skip(playerId: string): Card {
     if (this.state.phase !== "DRAFT") throw new Error("Not in draft phase");
@@ -124,34 +122,31 @@ export class Match {
     if (playerId !== this.state.currentTurnPlayerId)
       throw new Error("Not your turn");
 
-    if (!this.state.pendingCard) throw new Error("No card to skip");
-
     const player = this.getCurrentPlayer();
+
+    if (!player.pendingCard) throw new Error("No card to skip");
 
     if (player.skipUsed) throw new Error("Skip already used");
 
     player.skipUsed = true;
 
-    // Discard pending card
-    this.state.pendingCard = null;
+    player.pendingCard = null;
 
-    // Same player draws again
     const card = drawCard(this.state.deck);
     if (!card) throw new Error("Deck empty");
 
-    this.state.pendingCard = card;
+    player.pendingCard = card;
 
     return card;
   }
 
   // -------------------
-  // Swap Roles
+  // Swap
   // -------------------
   swap(playerId: string, roleA: Role, roleB: Role) {
     if (this.state.phase !== "SWAP") throw new Error("Not in swap phase");
 
     const player = this.state.players.find((p) => p.id === playerId);
-
     if (!player) throw new Error("Player not found");
 
     if (!canSwap(player)) throw new Error("Swap not allowed");
@@ -167,11 +162,10 @@ export class Match {
   }
 
   // -------------------
-  // Lock Swap (optional skip)
+  // Finalize Swap
   // -------------------
   finalizeSwapPhase(playerId: string) {
     const player = this.state.players.find((p) => p.id === playerId);
-
     if (!player) throw new Error("Player not found");
 
     player.hasSwapped = true;
@@ -186,7 +180,7 @@ export class Match {
   }
 
   // -------------------
-  // Start Scoring
+  // Scoring
   // -------------------
   private startScoring() {
     this.state.phase = "SCORING";
