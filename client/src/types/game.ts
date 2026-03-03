@@ -17,6 +17,7 @@ export interface Player {
   hasSwapped: boolean;
   team: Partial<Record<Role, Card>>;
   pendingCard: Card | null; // ✅ ADD THIS
+  totalScore?: number;
 }
 
 export interface MatchState {

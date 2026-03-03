@@ -170,14 +170,8 @@ export class Match {
     const player = this.state.players.find((p) => p.id === playerId);
     if (!player) throw new Error("Player not found");
 
-    // Prevent double finalize
-    if (player.hasSwapped) return;
-
+    // Mark player done (confirm OR cancel)
     player.hasSwapped = true;
-
-    // Player is considered DONE if:
-    // - They used skip in draft (no swap allowed)
-    // - OR they finalized swap (confirm or cancel)
 
     const allDone = this.state.players.every((p) => p.skipUsed || p.hasSwapped);
 
@@ -185,7 +179,6 @@ export class Match {
       this.startScoring();
     }
   }
-
   // -------------------
   // Scoring
   // -------------------
@@ -194,7 +187,13 @@ export class Match {
 
     const result = determineWinner(this.state.players);
 
+    // ✅ Store scores on each player
+    this.state.players.forEach((player) => {
+      player.totalScore = result.scores[player.id] ?? 0;
+    });
+
     this.state.winner = result.winnerId;
+
     this.state.phase = "FINISHED";
   }
 
