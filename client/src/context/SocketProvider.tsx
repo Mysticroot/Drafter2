@@ -38,6 +38,12 @@ useEffect(() => {
     setMatchState(matchState);
   });
 
+  socket.on("match:update", ({ matchState }) => {
+    console.log("📥 [FRONTEND] match:update received");
+    console.log("📦 [FRONTEND] new phase:", matchState.phase);
+    setMatchState(matchState);
+  });
+
   return () => {
     socket.off();
   };

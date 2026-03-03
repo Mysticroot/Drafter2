@@ -5,7 +5,10 @@ import type { Role } from "../types/game";
 
 export default function GameBoard() {
   const { socket, matchState, playerId } = useSocket();
+
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [swapMode, setSwapMode] = useState(false);
+  const [swapRoles, setSwapRoles] = useState<Role[]>([]);
 
   if (!matchState || !playerId) {
     return (
@@ -19,26 +22,31 @@ export default function GameBoard() {
   if (!myPlayer) return null;
 
   const pendingCard = myPlayer.pendingCard ?? null;
-
   const isMyTurn = matchState.currentTurnPlayerId === playerId;
 
-  const canDraw = matchState.phase === "DRAFT" && isMyTurn && !pendingCard;
+  const isDraftPhase = matchState.phase === "DRAFT";
+  const isSwapPhase = matchState.phase === "SWAP";
 
-  const canAssign = !!pendingCard && !!selectedRole && isMyTurn;
+  // -----------------------
+  // DRAFT LOGIC
+  // -----------------------
+
+  const canDraw = isDraftPhase && isMyTurn && !pendingCard;
+
+  const canAssign = isDraftPhase && !!pendingCard && !!selectedRole && isMyTurn;
 
   const canSkip =
-    matchState.phase === "DRAFT" &&
-    isMyTurn &&
-    !!pendingCard &&
-    !myPlayer.skipUsed;
+    isDraftPhase && isMyTurn && !!pendingCard && !myPlayer.skipUsed;
 
- const handleSkip = () => {
-   if (!socket) return;
+  // -----------------------
+  // SWAP LOGIC
+  // -----------------------
 
-   setSelectedRole(null);
-   socket.emit("draft:skip");
- };
+  const canUseSwap = isSwapPhase && !myPlayer.skipUsed && !myPlayer.hasSwapped;
 
+  // -----------------------
+  // HANDLERS
+  // -----------------------
 
   const handleDraw = () => {
     if (!socket) return;
@@ -53,8 +61,26 @@ export default function GameBoard() {
       role: selectedRole,
     });
 
-
     setSelectedRole(null);
+  };
+
+  const handleSkip = () => {
+    if (!socket) return;
+    socket.emit("draft:skip");
+  };
+
+  const handleConfirmSwap = () => {
+    if (!socket || swapRoles.length !== 2) return;
+
+    socket.emit("draft:swap", {
+      roleA: swapRoles[0],
+      roleB: swapRoles[1],
+    });
+
+    socket.emit("swap:finalize"); // 🔥 REQUIRED
+
+    setSwapMode(false);
+    setSwapRoles([]);
   };
 
   return (
@@ -75,10 +101,14 @@ export default function GameBoard() {
           selectedRole={selectedRole}
           setSelectedRole={setSelectedRole}
           isMyTurn={isMyTurn}
+          swapMode={swapMode}
+          swapRoles={swapRoles}
+          setSwapRoles={setSwapRoles}
         />
 
-        {/* CENTER */}
+        {/* CENTER PANEL */}
         <section className="flex flex-col items-center gap-8">
+          {/* Pending Card */}
           <div className="w-80 h-48 border-2 border-dashed border-neutral-600 flex items-center justify-center">
             {pendingCard ? (
               <div className="text-center">
@@ -92,46 +122,84 @@ export default function GameBoard() {
             )}
           </div>
 
-          <div className="flex gap-4">
-            <button
-              disabled={!canAssign}
-              onClick={handleAssign}
-              className="px-6 py-3 rounded bg-emerald-600 disabled:opacity-50"
-            >
-              Assign Card
-            </button>
+          {/* ---------------- DRAFT BUTTONS ---------------- */}
+          {isDraftPhase && (
+            <div className="flex gap-4">
+              <button
+                disabled={!canAssign}
+                onClick={handleAssign}
+                className="px-6 py-3 rounded bg-emerald-600 disabled:opacity-50"
+              >
+                Assign Card
+              </button>
 
-            <button
-              disabled={!canSkip}
-              onClick={handleSkip}
-              className="px-6 py-3 rounded bg-red-600 disabled:opacity-50"
-            >
-              {myPlayer.skipUsed ? "Skip Already Used" : "Skip"}
-            </button>
-          </div>
+              <button
+                disabled={!canSkip}
+                onClick={handleSkip}
+                className="px-6 py-3 rounded bg-red-600 disabled:opacity-50"
+              >
+                {myPlayer.skipUsed ? "Skip Used" : "Skip"}
+              </button>
 
-          <button
-            disabled={!canDraw}
-            onClick={handleDraw}
-            className="px-6 py-3 rounded bg-indigo-600 disabled:opacity-50"
-          >
-            Draw Card
-          </button>
+              <button
+                disabled={!canDraw}
+                onClick={handleDraw}
+                className="px-6 py-3 rounded bg-indigo-600 disabled:opacity-50"
+              >
+                Draw Card
+              </button>
+            </div>
+          )}
+
+          {/* ---------------- SWAP BUTTONS ---------------- */}
+          {/* ---------------- SWAP BUTTONS ---------------- */}
+          {canUseSwap && (
+            <div className="flex gap-4">
+              {/* When NOT in swap mode */}
+              {!swapMode && (
+                <>
+                  <button
+                    onClick={() => {
+                      setSwapMode(true);
+                      setSwapRoles([]);
+                    }}
+                    className="px-6 py-3 rounded bg-red-600"
+                  >
+                    Swap
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (!socket) return;
+                        console.log("🟡 FRONTEND: emitting swap:finalize");
+                      socket.emit("swap:finalize"); // 🔥 finalize without swapping
+                      setSwapMode(false);
+
+                      setSwapRoles([]);
+                    }}
+                    className="px-6 py-3 rounded bg-indigo-600"
+                  >
+                    Cancel Swap
+                  </button>
+                </>
+              )}
+
+              {/* When IN swap mode */}
+              {swapMode && (
+                <button
+                  disabled={swapRoles.length !== 2}
+                  onClick={handleConfirmSwap}
+                  className="px-6 py-3 rounded bg-yellow-600 disabled:opacity-50"
+                >
+                  Confirm Swap
+                </button>
+              )}
+            </div>
+          )}
         </section>
 
         <PlayerPanel title="Opponent" variant="opponent" />
       </main>
-
-      {/* FOOTER */}
-      <footer className="h-20 border-t border-neutral-700 flex items-center justify-center">
-        {/* <button
-          disabled={!canDraw}
-          onClick={handleDraw}
-          className="px-6 py-3 rounded bg-indigo-600 disabled:opacity-50"
-        >
-          Draw Card
-        </button> */}
-      </footer>
     </div>
   );
 }

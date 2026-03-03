@@ -4,7 +4,7 @@ import { matchService } from "../services/matchService.js";
 import { playerService } from "../services/playerService.js";
 
 export function registerResultHandlers(io: Server, socket: Socket) {
-  socket.on("swap:roles", ({ roleA, roleB }) => {
+  socket.on("draft:swap", ({ roleA, roleB }) => {
     try {
       const room = roomService.getRoomBySocket(socket.id);
       if (!room) throw new Error("Room not found");
@@ -17,7 +17,7 @@ export function registerResultHandlers(io: Server, socket: Socket) {
 
       match.swap(playerId, roleA, roleB);
 
-      io.to(room.id).emit("swap:update", {
+      io.to(room.id).emit("draft:update", {
         matchState: match.getState(),
       });
     } catch (err) {

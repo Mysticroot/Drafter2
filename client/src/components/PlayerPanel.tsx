@@ -7,6 +7,10 @@ interface PlayerPanelProps {
   selectedRole?: Role | null;
   setSelectedRole?: (role: Role) => void;
   isMyTurn?: boolean;
+
+  swapMode?: boolean;
+  swapRoles?: Role[];
+  setSwapRoles?: React.Dispatch<React.SetStateAction<Role[]>>;
 }
 
 const ROLES: Role[] = ["CAPTAIN", "VICE_CAPTAIN", "TANK", "HEALER", "SUPPORT"];
@@ -17,6 +21,9 @@ export default function PlayerPanel({
   selectedRole,
   setSelectedRole,
   isMyTurn,
+  swapMode,
+  swapRoles,
+  setSwapRoles,
 }: PlayerPanelProps) {
   return (
     <section className="flex flex-col gap-4">
@@ -31,6 +38,9 @@ export default function PlayerPanel({
             selectedRole={selectedRole}
             setSelectedRole={setSelectedRole}
             isMyTurn={isMyTurn}
+            swapMode={swapMode}
+            swapRoles={swapRoles}
+            setSwapRoles={setSwapRoles}
           />
         ))}
       </div>

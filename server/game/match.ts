@@ -165,16 +165,23 @@ export class Match {
   // Finalize Swap
   // -------------------
   finalizeSwapPhase(playerId: string) {
+    if (this.state.phase !== "SWAP") throw new Error("Not in swap phase");
+
     const player = this.state.players.find((p) => p.id === playerId);
     if (!player) throw new Error("Player not found");
 
+    // Prevent double finalize
+    if (player.hasSwapped) return;
+
     player.hasSwapped = true;
 
-    const allLocked = this.state.players.every(
-      (p) => p.hasSwapped || p.skipUsed,
-    );
+    // Player is considered DONE if:
+    // - They used skip in draft (no swap allowed)
+    // - OR they finalized swap (confirm or cancel)
 
-    if (allLocked) {
+    const allDone = this.state.players.every((p) => p.skipUsed || p.hasSwapped);
+
+    if (allDone) {
       this.startScoring();
     }
   }

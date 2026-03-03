@@ -75,4 +75,27 @@ export function registerDraftHandlers(io: Server, socket: Socket) {
       socket.emit("error", { message: (err as Error).message });
     }
   });
+
+  socket.on("draft:swap", ({ roleA, roleB }) => {
+    try {
+      const room = roomService.getRoomBySocket(socket.id);
+      if (!room) throw new Error("Room not found");
+
+      const match = matchService.getMatch(room.matchId);
+      if (!match) throw new Error("Match not found");
+
+      const playerId = playerService.getPlayerId(socket.id);
+      if (!playerId) throw new Error("Player not found");
+
+      match.swap(playerId, roleA, roleB);
+
+      io.to(room.id).emit("draft:update", {
+        matchState: match.getState(),
+      });
+    } catch (err) {
+      socket.emit("error", { message: (err as Error).message });
+    }
+  });
+
+  
 }
