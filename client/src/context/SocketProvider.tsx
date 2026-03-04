@@ -13,6 +13,14 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [matchState, setMatchState] = useState<MatchState | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
+
+  const resetMatch = () => {
+    setMatchState(null);
+    setRoomId(null);
+    setPlayerId(null);
+  };
+
+
 useEffect(() => {
   socket.on("connect", () => {
     console.log("✅ Socket connected:", socket.id);
@@ -56,6 +64,7 @@ useEffect(() => {
         matchState,
         roomId,
         playerId,
+        resetMatch,
       }}
     >
       {children}

@@ -11,6 +11,7 @@ export interface SocketContextValue {
   matchState: MatchState | null;
   roomId: string | null;
   playerId: string | null; // ✅ add back
+  resetMatch: () => void; // ✅ ADD THIS
 }
 
 export const SocketContext = createContext<SocketContextValue>({
@@ -18,4 +19,5 @@ export const SocketContext = createContext<SocketContextValue>({
   matchState: null,
   roomId: null,
   playerId: null, // ✅ add back
+resetMatch: () =>   {} // ✅ ADD THIS
 });

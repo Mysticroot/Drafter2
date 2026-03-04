@@ -5,7 +5,7 @@ import { useSocket } from "../hooks/useSocket";
 import type { Role } from "../types/game";
 
 export default function GameBoard() {
-  const { socket, matchState, playerId } = useSocket();
+  const { socket, matchState, playerId ,resetMatch} = useSocket();
   const navigate = useNavigate();
 
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -77,6 +77,10 @@ export default function GameBoard() {
     setSwapRoles([]);
   };
 
+ const handlePlayAgain = () => {
+   resetMatch();
+   navigate("/");
+ };
  
 
   const myScore = myPlayer.totalScore ?? 0;
@@ -133,10 +137,7 @@ export default function GameBoard() {
               </div>
 
               <button
-                onClick={() => 
-                  {console.log("clicked home");
-                  
-                  navigate("/")}}
+                onClick={handlePlayAgain}
                 className="mt-6 px-8 py-3 rounded bg-indigo-600 hover:bg-indigo-500"
               >
                 Play Again
