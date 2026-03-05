@@ -4,10 +4,11 @@ import type { Role } from "../types/game";
 interface PlayerPanelProps {
   title: string;
   variant: "you" | "opponent";
+
   selectedRole?: Role | null;
   setSelectedRole?: (role: Role) => void;
   isMyTurn?: boolean;
- totalScore?: number; // ✅ ADD THIS
+
   swapMode?: boolean;
   swapRoles?: Role[];
   setSwapRoles?: React.Dispatch<React.SetStateAction<Role[]>>;

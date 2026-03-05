@@ -4,6 +4,7 @@ import type { Role } from "../types/game";
 interface TeamSlotProps {
   role: Role;
   variant?: "you" | "opponent";
+
   selectedRole?: Role | null;
   setSelectedRole?: (role: Role) => void;
   isMyTurn?: boolean;
@@ -41,8 +42,8 @@ export default function TeamSlot({
 
   const canSelectDraft =
     variant === "you" &&
-    isMyTurn === true &&
-    !!pendingCard &&
+    isMyTurn &&
+    pendingCard &&
     !card &&
     matchState.phase === "DRAFT";
 
@@ -50,7 +51,8 @@ export default function TeamSlot({
   const isSwapSelected = swapRoles?.includes(role);
 
   const handleClick = () => {
-    // ---- SWAP MODE ----
+    /* SWAP MODE */
+
     if (
       isSwapPhase &&
       swapMode &&
@@ -69,7 +71,8 @@ export default function TeamSlot({
       return;
     }
 
-    // ---- DRAFT MODE ----
+    /* DRAFT MODE */
+
     if (canSelectDraft) {
       setSelectedRole?.(role);
     }
@@ -78,17 +81,16 @@ export default function TeamSlot({
   const base =
     "h-14 rounded border flex items-center justify-center text-sm transition";
 
-  const filledStyles = "bg-emerald-700 border-emerald-500 text-white";
-  const emptyStyles = "bg-neutral-800 border-neutral-700 text-neutral-400";
+  const filled = "bg-emerald-700 border-emerald-500 text-white";
+  const empty = "bg-neutral-800 border-neutral-700 text-neutral-400";
 
-  const selectableStyles =
+  const selectable =
     canSelectDraft || (isSwapPhase && swapMode && variant === "you" && card)
       ? "cursor-pointer hover:border-yellow-400"
       : "opacity-60";
 
-  const selectedStyles = isSelected ? "border-yellow-400 bg-yellow-900/30" : "";
-
-  const swapSelectedStyles = isSwapSelected
+  const selected = isSelected ? "border-yellow-400 bg-yellow-900/30" : "";
+  const swapSelected = isSwapSelected
     ? "border-yellow-400 bg-yellow-900/40"
     : "";
 
@@ -96,8 +98,8 @@ export default function TeamSlot({
     <div
       onClick={handleClick}
       className={`${base} ${
-        card ? filledStyles : emptyStyles
-      } ${selectableStyles} ${selectedStyles} ${swapSelectedStyles}`}
+        card ? filled : empty
+      } ${selectable} ${selected} ${swapSelected}`}
     >
       {card ? card.name : role.replace("_", " ")}
     </div>

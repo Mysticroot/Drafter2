@@ -5,7 +5,7 @@ import { useSocket } from "../hooks/useSocket";
 import type { Role } from "../types/game";
 
 export default function GameBoard() {
-  const { socket, matchState, playerId ,resetMatch} = useSocket();
+  const { socket, matchState, playerId, resetMatch } = useSocket();
   const navigate = useNavigate();
 
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -77,11 +77,10 @@ export default function GameBoard() {
     setSwapRoles([]);
   };
 
- const handlePlayAgain = () => {
-   resetMatch();
-   navigate("/");
- };
- 
+  const handlePlayAgain = () => {
+    resetMatch();
+    navigate("/");
+  };
 
   const myScore = myPlayer.totalScore ?? 0;
   const opponentScore = opponent.totalScore ?? 0;
