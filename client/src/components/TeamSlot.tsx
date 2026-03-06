@@ -1,14 +1,13 @@
 import { useSocket } from "../hooks/useSocket";
 import type { Role } from "../types/game";
+import re from "../assets/react.svg";
 
 interface TeamSlotProps {
   role: Role;
   variant?: "you" | "opponent";
-
   selectedRole?: Role | null;
   setSelectedRole?: (role: Role) => void;
   isMyTurn?: boolean;
-
   swapMode?: boolean;
   swapRoles?: Role[];
   setSwapRoles?: React.Dispatch<React.SetStateAction<Role[]>>;
@@ -27,8 +26,6 @@ export default function TeamSlot({
   const { matchState, playerId } = useSocket();
 
   if (!matchState || !playerId) return null;
-
-  const isSwapPhase = matchState.phase === "SWAP";
 
   const player =
     variant === "you"
@@ -51,10 +48,8 @@ export default function TeamSlot({
   const isSwapSelected = swapRoles?.includes(role);
 
   const handleClick = () => {
-    /* SWAP MODE */
-
     if (
-      isSwapPhase &&
+      matchState.phase === "SWAP" &&
       swapMode &&
       variant === "you" &&
       card &&
@@ -71,37 +66,57 @@ export default function TeamSlot({
       return;
     }
 
-    /* DRAFT MODE */
-
     if (canSelectDraft) {
       setSelectedRole?.(role);
     }
   };
 
-  const base =
-    "h-14 rounded border flex items-center justify-center text-sm transition";
+  const roleLabel = role.replace("_", " ");
 
-  const filled = "bg-emerald-700 border-emerald-500 text-white";
-  const empty = "bg-neutral-800 border-neutral-700 text-neutral-400";
+ return (
+   <div
+     onClick={handleClick}
+     className={`flex items-center rounded border h-20 overflow-hidden transition
+    ${card ? "bg-neutral-800 border-neutral-600" : "bg-neutral-900 border-neutral-700"}
+    ${isSelected ? "ring-2 ring-yellow-400" : ""}
+    ${isSwapSelected ? "ring-2 ring-indigo-400" : ""}
+    `}
+   >
+     {/* EMPTY SLOT */}
+     {!card && (
+       <div className="w-full text-center text-neutral-400">{roleLabel}</div>
+     )}
 
-  const selectable =
-    canSelectDraft || (isSwapPhase && swapMode && variant === "you" && card)
-      ? "cursor-pointer hover:border-yellow-400"
-      : "opacity-60";
+     {/* FILLED SLOT */}
+     {card && (
+       <>
+         {/* IMAGE SECTION (40%) */}
+         <div className="relative w-[40%] h-full overflow-hidden">
+           <img src={re} className="w-full h-full object-cover" />
 
-  const selected = isSelected ? "border-yellow-400 bg-yellow-900/30" : "";
-  const swapSelected = isSwapSelected
-    ? "border-yellow-400 bg-yellow-900/40"
-    : "";
+           {/* diagonal cut */}
+           <div className="absolute right-[-18px] top-0 h-full w-10 bg-neutral-800 rotate-[20deg]" />
+         </div>
 
-  return (
-    <div
-      onClick={handleClick}
-      className={`${base} ${
-        card ? filled : empty
-      } ${selectable} ${selected} ${swapSelected}`}
-    >
-      {card ? card.name : role.replace("_", " ")}
-    </div>
-  );
+         {/* RIGHT SIDE CONTENT */}
+         <div className="flex items-center justify-between flex-1 px-4">
+           {/* CHARACTER INFO */}
+           <div className="flex flex-col">
+             <span className="text-sm font-semibold">{card.name}</span>
+             <span className="text-xs text-neutral-400">{card.anime}</span>
+           </div>
+
+           {/* ROLE STAT */}
+           <div className="text-right">
+             <div className="text-xs text-neutral-400">{roleLabel}</div>
+
+             <div className="text-lg font-semibold text-emerald-400">
+               {card.stats[role]}
+             </div>
+           </div>
+         </div>
+       </>
+     )}
+   </div>
+ );
 }

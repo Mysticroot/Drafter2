@@ -6,6 +6,7 @@ export interface Card {
   id: string;
   name: string;
   anime: string;
+  image: string; // ✅ ADD THIS
   stats: Record<Role, number>;
 }
 
