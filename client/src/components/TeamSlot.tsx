@@ -1,7 +1,6 @@
 import { useSocket } from "../hooks/useSocket";
 import type { Role } from "../types/game";
-import re from "../assets/react.svg";
-
+// 
 interface TeamSlotProps {
   role: Role;
   variant?: "you" | "opponent";
@@ -92,7 +91,7 @@ export default function TeamSlot({
        <>
          {/* IMAGE SECTION (40%) */}
          <div className="relative w-[40%] h-full overflow-hidden">
-           <img src={re} className="w-full h-full object-cover" />
+           <img src={card.image} className="w-full h-full object-cover" />
 
            {/* diagonal cut */}
            <div className="absolute right-[-18px] top-0 h-full w-10 bg-neutral-800 rotate-[20deg]" />

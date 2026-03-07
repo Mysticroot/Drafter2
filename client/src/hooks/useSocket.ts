@@ -8,5 +8,6 @@ export function useSocket() {
     throw new Error("useSocket must be used inside SocketProvider");
   }
 
+  console.log("useSocket hook called", context);
   return context;
 }

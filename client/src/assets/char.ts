@@ -1,5 +1,5 @@
-import type { Card } from "../game/types.js";
-import { v4 as uuid } from "uuid";
+import type { Card } from "../types/game";
+// import { v4 as uuid } from "uuid";
 
 export const baseCharacters: Omit<Card, "id">[] = [
   {
@@ -149,7 +149,7 @@ export const baseCharacters: Omit<Card, "id">[] = [
   {
     name: "Madara Uchiha",
     anime: "Naruto",
-    image: "/characters/madara.png",
+    image: "/characters/madara.jpg",
     stats: {
       CAPTAIN: 98,
       VICE_CAPTAIN: 95,

@@ -13,6 +13,7 @@ export interface Card {
   name: string;
   anime: string;
   stats: CardStats;
+  image: string;
 }
 
 export interface Player {

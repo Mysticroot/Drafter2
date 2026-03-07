@@ -21,22 +21,26 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       console.log("✅ connected:", socket.id);
     });
 
-    socket.on("room:created", ({ roomId, playerId }) => {
-      setRoomId(roomId);
-      setPlayerId(playerId);
-    });
+   socket.on("room:created", ({ roomId, playerId }) => {
 
-    socket.on("player:ready", ({ playerId }) => {
-      setPlayerId(playerId);
-    });
+     setRoomId(roomId);
+     setPlayerId(playerId);
+   });
 
-    socket.on("match:start", ({ matchState }) => {
-      setMatchState(matchState);
-    });
+   socket.on("player:ready", ({ playerId }) => {
 
-    socket.on("draft:update", ({ matchState }) => {
-      setMatchState(matchState);
-    });
+     setPlayerId(playerId);
+   });
+
+   socket.on("match:start", ({ matchState }) => {
+
+     setMatchState(matchState);
+   });
+
+   socket.on("draft:update", ({ matchState }) => {
+
+     setMatchState(matchState);
+   });
 
     socket.on("match:update", ({ matchState }) => {
       setMatchState(matchState);
@@ -46,7 +50,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       socket.off();
     };
   }, []);
-
   return (
     <SocketContext.Provider
       value={{
