@@ -14,7 +14,7 @@ export default function LobbyPage() {
   const [roomIdInput, setRoomIdInput] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  const tags = ["One Piece", "Naruto", "Bleach"];
+  const tags = [...new Set(baseCharacters.map((card) => card.anime))];
   const trimmedRoomId = roomIdInput.trim();
 
   /* ---------------- NAVIGATE TO GAME ---------------- */

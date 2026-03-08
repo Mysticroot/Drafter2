@@ -221,4 +221,19 @@ export class Match {
       this.state.currentTurnPlayerId = null;
     }
   }
+
+  // -------------------
+  // Rebind socket (for reconnect)
+  // -------------------
+  rebindSocket(playerId: string, socketId: string) {
+    const player = this.state.players.find((p) => p.id === playerId);
+
+    if (!player) {
+      throw new Error("Player not found for reconnect");
+    }
+
+    player.socketId = socketId;
+  }
 }
+
+

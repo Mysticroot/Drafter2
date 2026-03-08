@@ -6,36 +6,53 @@ import { playerService } from "../services/playerService.js";
 export function registerDraftHandlers(io: Server, socket: Socket) {
   socket.on("draft:draw", () => {
     try {
-      console.log("📥 [BACKEND] draft:draw received from", socket.id);
+      console.log("[Draft] draft:draw received", { socketId: socket.id });
 
       const room = roomService.getRoomBySocket(socket.id);
       if (!room) throw new Error("Room not found");
-      console.log("🏠 [BACKEND] Room found:", room.id);
+      console.log("[Draft] room resolved", {
+        roomId: room.id,
+        socketId: socket.id,
+      });
 
       const match = matchService.getMatch(room.matchId);
       if (!match) throw new Error("Match not found");
-      console.log("🎮 [BACKEND] Match found:", room.matchId);
+      console.log("[Draft] match resolved", {
+        matchId: room.matchId,
+        phase: match.getState().phase,
+        currentTurnPlayerId: match.getState().currentTurnPlayerId,
+      });
 
       const playerId = playerService.getPlayerId(socket.id);
       if (!playerId) throw new Error("Player not found");
-      console.log("👤 [BACKEND] Player ID:", playerId);
+      console.log("[Draft] player resolved", { socketId: socket.id, playerId });
 
-      console.log("🃏 [BACKEND] Calling match.draw()");
       match.draw(playerId);
 
-      console.log("📡 [BACKEND] Emitting draft:update");
+      console.log("[Draft] draft:update emit after draw", {
+        roomId: room.id,
+        currentTurnPlayerId: match.getState().currentTurnPlayerId,
+      });
 
       io.to(room.id).emit("draft:update", {
         matchState: match.getState(),
       });
     } catch (err) {
-      console.log("❌ [BACKEND] Error:", (err as Error).message);
+      console.error("[Draft] draft:draw failed", {
+        socketId: socket.id,
+        message: (err as Error).message,
+      });
       socket.emit("error", { message: (err as Error).message });
     }
   });
 
   socket.on("draft:assign", ({ role }) => {
     try {
+      console.log("[Draft] draft:assign received", {
+        socketId: socket.id,
+        role,
+      });
+
       const room = roomService.getRoomBySocket(socket.id);
       if (!room) throw new Error("Room not found");
 
@@ -47,16 +64,29 @@ export function registerDraftHandlers(io: Server, socket: Socket) {
 
       match.assign(playerId, role);
 
+      console.log("[Draft] draft:update emit after assign", {
+        roomId: room.id,
+        playerId,
+        currentTurnPlayerId: match.getState().currentTurnPlayerId,
+      });
+
       io.to(room.id).emit("draft:update", {
         matchState: match.getState(),
       });
     } catch (err) {
+      console.error("[Draft] draft:assign failed", {
+        socketId: socket.id,
+        role,
+        message: (err as Error).message,
+      });
       socket.emit("error", { message: (err as Error).message });
     }
   });
 
   socket.on("draft:skip", () => {
     try {
+      console.log("[Draft] draft:skip received", { socketId: socket.id });
+
       const room = roomService.getRoomBySocket(socket.id);
       if (!room) throw new Error("Room not found");
 
@@ -68,34 +98,21 @@ export function registerDraftHandlers(io: Server, socket: Socket) {
 
       match.skip(playerId);
 
-      io.to(room.id).emit("draft:update", {
-        matchState: match.getState(),
+      console.log("[Draft] draft:update emit after skip", {
+        roomId: room.id,
+        playerId,
+        currentTurnPlayerId: match.getState().currentTurnPlayerId,
       });
-    } catch (err) {
-      socket.emit("error", { message: (err as Error).message });
-    }
-  });
-
-  socket.on("draft:swap", ({ roleA, roleB }) => {
-    try {
-      const room = roomService.getRoomBySocket(socket.id);
-      if (!room) throw new Error("Room not found");
-
-      const match = matchService.getMatch(room.matchId);
-      if (!match) throw new Error("Match not found");
-
-      const playerId = playerService.getPlayerId(socket.id);
-      if (!playerId) throw new Error("Player not found");
-
-      match.swap(playerId, roleA, roleB);
 
       io.to(room.id).emit("draft:update", {
         matchState: match.getState(),
       });
     } catch (err) {
+      console.error("[Draft] draft:skip failed", {
+        socketId: socket.id,
+        message: (err as Error).message,
+      });
       socket.emit("error", { message: (err as Error).message });
     }
   });
-
-  
 }

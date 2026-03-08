@@ -83,6 +83,37 @@ class RoomService {
   }
 
   // -------------------
+  // Rebind Socket To Room
+  // -------------------
+  rebindSocket(roomId: string, previousSocketId: string, newSocketId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) return;
+
+    console.log("[RoomService] rebindSocket start", {
+      roomId,
+      previousSocketId,
+      newSocketId,
+      roomPlayersBefore: [...room.players],
+    });
+
+    const index = room.players.findIndex((id) => id === previousSocketId);
+
+    if (index >= 0) {
+      room.players[index] = newSocketId;
+    } else if (!room.players.includes(newSocketId)) {
+      room.players.push(newSocketId);
+    }
+
+    this.socketToRoom.delete(previousSocketId);
+    this.socketToRoom.set(newSocketId, roomId);
+
+    console.log("[RoomService] rebindSocket done", {
+      roomId,
+      roomPlayersAfter: [...room.players],
+    });
+  }
+
+  // -------------------
   // Remove Player
   // -------------------
   removePlayer(socketId: string) {
@@ -92,13 +123,43 @@ class RoomService {
     const room = this.rooms.get(roomId);
     if (!room) return;
 
+    console.log("Removing player socket:", socketId);
+
+    console.log("[RoomService] removePlayer start", {
+      roomId,
+      socketId,
+      roomPlayersBefore: [...room.players],
+    });
+
     room.players = room.players.filter((id) => id !== socketId);
+
     this.socketToRoom.delete(socketId);
 
-    if (room.players.length === 0) {
-      matchService.removeMatch(room.matchId);
+    console.log("[RoomService] removePlayer done", {
+      roomId,
+      roomPlayersAfter: [...room.players],
+    });
+
+    // DO NOT delete room immediately
+    // allow reconnect window
+
+    setTimeout(() => {
+      const r = this.rooms.get(roomId);
+      if (!r) return;
+
+      if (r.players.length > 0) {
+        console.log("Player already reconnected, keeping room", {
+          roomId,
+          roomPlayers: [...r.players],
+        });
+        return;
+      }
+
+      console.log("Deleting empty room:", roomId);
+
+      matchService.removeMatch(r.matchId);
       this.rooms.delete(roomId);
-    }
+    }, 15000);
   }
 }
 
