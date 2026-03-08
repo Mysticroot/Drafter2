@@ -1,8 +1,16 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-700 bg-slate-900 py-4 text-center text-sm text-slate-400">
-      Anime Draft Arena © {new Date().getFullYear()} • Built with React +
-      Socket.io
+    <footer className="relative z-10 border-t border-slate-800/50 bg-slate-950/50 px-8 py-6 backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <p className="text-xs text-slate-500 uppercase tracking-widest">
+          © 2024 ANIME DRAFT ARENA. ALL RIGHTS RESERVED.
+        </p>
+        <div className="flex gap-6">
+          <a href="#" className="text-xs text-slate-500 hover:text-amber-400 transition-colors uppercase tracking-widest">Discord</a>
+          <a href="#" className="text-xs text-slate-500 hover:text-amber-400 transition-colors uppercase tracking-widest">Twitter</a>
+          <a href="#" className="text-xs text-slate-500 hover:text-amber-400 transition-colors uppercase tracking-widest">Support</a>
+        </div>
+      </div>
     </footer>
   );
 }

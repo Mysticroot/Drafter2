@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PlayerPanel from "./PlayerPanel";
+import CardTile from "./CardTile";
 import { useSocket } from "../hooks/useSocket";
 import type { Role } from "../types/game";
 
@@ -14,8 +15,15 @@ export default function GameBoard() {
 
   if (!matchState || !playerId) {
     return (
-      <div className="min-h-screen bg-neutral-900 text-white flex items-center justify-center">
-        Waiting for opponent…
+      <div className="relative min-h-screen bg-slate-950 text-white flex items-center justify-center overflow-hidden">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-amber-500/20 blur-3xl" />
+          <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute right-0 top-20 h-72 w-72 rounded-full bg-rose-500/10 blur-3xl" />
+        </div>
+        <div className="relative z-10 text-lg font-semibold">
+          Waiting for opponent...
+        </div>
       </div>
     );
   }
@@ -79,7 +87,7 @@ export default function GameBoard() {
 
   const handlePlayAgain = () => {
     resetMatch();
-    navigate("/");
+    navigate("/lobby");
   };
 
   const myScore = myPlayer.totalScore ?? 0;
@@ -87,18 +95,34 @@ export default function GameBoard() {
   const didWin = matchState.winner === playerId;
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white flex flex-col">
+    <div className="relative min-h-screen bg-slate-950 text-white flex flex-col overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-amber-500/15 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute right-0 top-16 h-80 w-80 rounded-full bg-rose-500/10 blur-3xl" />
+      </div>
+
       {/* HEADER */}
-      <header className="h-16 flex items-center justify-between px-6 border-b border-neutral-700">
+      <header className="relative z-10 h-16 flex items-center justify-between px-6 border-b border-slate-700/80 bg-slate-900/40 backdrop-blur">
         <div>Phase: {matchState.phase}</div>
-        {!isFinishedPhase && (
-          <div className={isMyTurn ? "text-emerald-400" : "text-neutral-500"}>
-            {isMyTurn ? "Your Turn" : "Opponent Turn"}
-          </div>
-        )}
+        <div />
       </header>
 
-      <main className="flex-1 grid grid-cols-3 gap-6 p-6">
+      <main className="relative z-10 flex-1 grid grid-cols-1 xl:grid-cols-3 gap-6 p-5">
+        {!isFinishedPhase && (
+          <div className="xl:col-span-3 flex justify-center items-start h-fit">
+            <div
+              className={`w-fit rounded-full border px-3 py-[2px] text-large font-semibold ${
+                isMyTurn
+                  ? "border-emerald-300/70 bg-emerald-500/15 text-emerald-300"
+                  : "border-slate-600 bg-slate-800/80 text-slate-300"
+              }`}
+            >
+              {isMyTurn ? "Your Turn" : "Opponent Turn"}
+            </div>
+          </div>
+        )}
+
         <PlayerPanel
           title="You"
           variant="you"
@@ -145,15 +169,10 @@ export default function GameBoard() {
           ) : (
             <>
               {/* Pending Card */}
-              <div className="w-80 h-48 border-2 border-dashed border-neutral-600 flex items-center justify-center">
+              <div className="w-80 min-h-48 border-2 border-dashed border-slate-600 bg-slate-900/35 rounded-xl p-3 flex items-center justify-center">
                 {pendingCard ? (
-                  <div className="text-center">
-                    <p className="text-yellow-400 font-semibold">
-                      {pendingCard.name}
-                    </p>
-                    <p className="text-sm text-neutral-400">
-                      {pendingCard.anime}
-                    </p>
+                  <div className="w-full">
+                    <CardTile card={pendingCard} />
                   </div>
                 ) : (
                   "No Card Drawn"
