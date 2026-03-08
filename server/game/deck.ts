@@ -2,6 +2,32 @@ import { v4 as uuid } from "uuid";
 import type { Card } from "./types.js";
 import { baseCharacters } from "../data/characters.js";
 
+function normalizeAnimePool(selectedAnimes?: string[]): string[] {
+  if (!selectedAnimes || selectedAnimes.length === 0) {
+    return [];
+  }
+
+  const availableAnimes = new Set(baseCharacters.map((char) => char.anime));
+
+  return Array.from(new Set(selectedAnimes)).filter((anime) =>
+    availableAnimes.has(anime),
+  );
+}
+
+export function resolveDeckSourceCharacters(selectedAnimes?: string[]) {
+  const animePool = normalizeAnimePool(selectedAnimes);
+
+  if (animePool.length === 0) {
+    return baseCharacters;
+  }
+
+  return baseCharacters.filter((char) => animePool.includes(char.anime));
+}
+
+export function getDeckCardCount(selectedAnimes?: string[]): number {
+  return resolveDeckSourceCharacters(selectedAnimes).length;
+}
+
 // Fisher-Yates shuffle
 function shuffle<T>(array: T[]): T[] {
   const copy = [...array];
@@ -14,8 +40,10 @@ function shuffle<T>(array: T[]): T[] {
   return copy;
 }
 
-export function createDeck(): Card[] {
-  const deck: Card[] = baseCharacters.map((char) => ({
+export function createDeck(selectedAnimes?: string[]): Card[] {
+  const sourceCharacters = resolveDeckSourceCharacters(selectedAnimes);
+
+  const deck: Card[] = sourceCharacters.map((char) => ({
     id: uuid(),
     ...char,
   }));

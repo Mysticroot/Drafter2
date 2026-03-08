@@ -1,4 +1,4 @@
-import type { Card } from "../game/types.js";
+import type { Card } from "../types/game";
 
 export const baseCharacters: Omit<Card, "id">[] = [
   // ---------------- ONE PIECE (20) ----------------
@@ -283,6 +283,30 @@ export const baseCharacters: Omit<Card, "id">[] = [
     image: "/characters/trunks.png",
     stats: { CAPTAIN: 85, VICE_CAPTAIN: 88, TANK: 80, HEALER: 10, SUPPORT: 75 },
   },
+  {
+    name: "Goku Black",
+    anime: "Dragon Ball",
+    image: "/characters/goku_black.png",
+    stats: {
+      CAPTAIN: 94,
+      VICE_CAPTAIN: 90,
+      TANK: 85,
+      HEALER: 5,
+      SUPPORT: 82,
+    },
+  },
+  {
+    name: "Jiren",
+    anime: "Dragon Ball",
+    image: "/characters/jiren.png",
+    stats: {
+      CAPTAIN: 96,
+      VICE_CAPTAIN: 88,
+      TANK: 97,
+      HEALER: 5,
+      SUPPORT: 70,
+    },
+  },
   // ---------------- HUNTER X HUNTER (10) ----------------
   {
     name: "Gon Freecss",
@@ -405,5 +429,126 @@ export const baseCharacters: Omit<Card, "id">[] = [
     anime: "Black Clover",
     image: "/characters/licht.png",
     stats: { CAPTAIN: 96, VICE_CAPTAIN: 90, TANK: 90, HEALER: 5, SUPPORT: 85 },
+  },
+  //bleach
+  {
+    name: "Ichigo Kurosaki",
+    anime: "Bleach",
+    image: "/characters/ichigo.png",
+    stats: {
+      CAPTAIN: 96,
+      VICE_CAPTAIN: 90,
+      TANK: 88,
+      HEALER: 5,
+      SUPPORT: 80,
+    },
+  },
+  {
+    name: "Rukia Kuchiki",
+    anime: "Bleach",
+    image: "/characters/rukia.png",
+    stats: {
+      CAPTAIN: 75,
+      VICE_CAPTAIN: 85,
+      TANK: 70,
+      HEALER: 60,
+      SUPPORT: 82,
+    },
+  },
+  {
+    name: "Byakuya Kuchiki",
+    anime: "Bleach",
+    image: "/characters/byakuya.png",
+    stats: {
+      CAPTAIN: 90,
+      VICE_CAPTAIN: 88,
+      TANK: 82,
+      HEALER: 10,
+      SUPPORT: 75,
+    },
+  },
+  {
+    name: "Kenpachi Zaraki",
+    anime: "Bleach",
+    image: "/characters/kenpachi.png",
+    stats: {
+      CAPTAIN: 92,
+      VICE_CAPTAIN: 85,
+      TANK: 98,
+      HEALER: 5,
+      SUPPORT: 60,
+    },
+  },
+  {
+    name: "Toshiro Hitsugaya",
+    anime: "Bleach",
+    image: "/characters/toshiro.png",
+    stats: {
+      CAPTAIN: 88,
+      VICE_CAPTAIN: 90,
+      TANK: 80,
+      HEALER: 40,
+      SUPPORT: 85,
+    },
+  },
+  {
+    name: "Sosuke Aizen",
+    anime: "Bleach",
+    image: "/characters/aizen.png",
+    stats: {
+      CAPTAIN: 97,
+      VICE_CAPTAIN: 92,
+      TANK: 85,
+      HEALER: 20,
+      SUPPORT: 90,
+    },
+  },
+  {
+    name: "Yoruichi Shihouin",
+    anime: "Bleach",
+    image: "/characters/yoruichi.png",
+    stats: {
+      CAPTAIN: 88,
+      VICE_CAPTAIN: 90,
+      TANK: 75,
+      HEALER: 20,
+      SUPPORT: 88,
+    },
+  },
+  {
+    name: "Kisuke Urahara",
+    anime: "Bleach",
+    image: "/characters/urahara.png",
+    stats: {
+      CAPTAIN: 90,
+      VICE_CAPTAIN: 88,
+      TANK: 78,
+      HEALER: 45,
+      SUPPORT: 95,
+    },
+  },
+  {
+    name: "Ulquiorra Cifer",
+    anime: "Bleach",
+    image: "/characters/ulquiorra.png",
+    stats: {
+      CAPTAIN: 94,
+      VICE_CAPTAIN: 88,
+      TANK: 85,
+      HEALER: 5,
+      SUPPORT: 82,
+    },
+  },
+  {
+    name: "Grimmjow Jaegerjaquez",
+    anime: "Bleach",
+    image: "/characters/grimmjow.png",
+    stats: {
+      CAPTAIN: 90,
+      VICE_CAPTAIN: 86,
+      TANK: 88,
+      HEALER: 5,
+      SUPPORT: 70,
+    },
   },
 ];

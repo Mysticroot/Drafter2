@@ -7,8 +7,10 @@ import { determineWinner } from "./scoring.js";
 
 export class Match {
   private state: MatchState;
+  private readonly selectedAnimes: string[];
 
-  constructor() {
+  constructor(selectedAnimes: string[] = []) {
+    this.selectedAnimes = selectedAnimes;
     this.state = {
       id: uuid(),
       phase: "LOBBY",
@@ -54,7 +56,7 @@ export class Match {
   // -------------------
   private startDraft() {
     this.state.phase = "DRAFT";
-    this.state.deck = createDeck();
+    this.state.deck = createDeck(this.selectedAnimes);
 
     const randomIndex = Math.floor(Math.random() * 2);
     this.state.currentTurnPlayerId = this.state.players[randomIndex].id;

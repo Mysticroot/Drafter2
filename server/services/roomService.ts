@@ -1,10 +1,14 @@
 import { v4 as uuid } from "uuid";
 import { matchService } from "./matchService.js";
+import { getDeckCardCount } from "../game/deck.js";
+
+const MIN_DECK_SIZE = 10;
 
 interface Room {
   id: string;
   matchId: string;
   players: string[]; // socketIds
+  selectedAnimes: string[];
 }
 
 class RoomService {
@@ -19,14 +23,23 @@ class RoomService {
   // -------------------
   // Create Room
   // -------------------
-  createRoom(socketId: string): Room {
+  createRoom(socketId: string, selectedAnimes: string[] = []): Room {
+    const deckCardCount = getDeckCardCount(selectedAnimes);
+
+    if (deckCardCount < MIN_DECK_SIZE) {
+      throw new Error(
+        `Selected franchises create only ${deckCardCount} cards. Choose at least ${MIN_DECK_SIZE} cards before creating a room.`,
+      );
+    }
+
     const roomId = uuid();
-    const match = matchService.createMatch();
+    const match = matchService.createMatch(selectedAnimes);
 
     const room: Room = {
       id: roomId,
       matchId: match.getState().id,
       players: [socketId],
+      selectedAnimes,
     };
 
     this.rooms.set(roomId, room);

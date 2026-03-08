@@ -10,8 +10,8 @@ class MatchService {
   // -------------------
   // Create new match
   // -------------------
-  createMatch(): Match {
-    const match = new Match();
+  createMatch(selectedAnimes: string[] = []): Match {
+    const match = new Match(selectedAnimes);
     this.matches.set(match.getState().id, match);
     return match;
   }

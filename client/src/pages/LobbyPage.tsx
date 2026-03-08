@@ -8,13 +8,17 @@ import CardTile from "../components/CardTile";
 
 import { baseCharacters } from "../assets/char";
 
+const FRANCHISE_TAGS = [...new Set(baseCharacters.map((card) => card.anime))];
+const MIN_DECK_SIZE = 10;
+
 export default function LobbyPage() {
   const { socket, roomId, matchState } = useSocket();
 
   const [roomIdInput, setRoomIdInput] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  const tags = [...new Set(baseCharacters.map((card) => card.anime))];
+  const tags = FRANCHISE_TAGS;
+  const [selectedPoolTags, setSelectedPoolTags] = useState<string[]>(tags);
   const trimmedRoomId = roomIdInput.trim();
 
   /* ---------------- NAVIGATE TO GAME ---------------- */
@@ -76,7 +80,18 @@ export default function LobbyPage() {
   /* ---------------- ACTIONS ---------------- */
 
   const createRoom = () => {
-    socket?.emit("room:create");
+    socket?.emit("room:create", { animes: selectedPoolTags });
+  };
+
+  const togglePoolTag = (tag: string) => {
+    setSelectedPoolTags((prev) => {
+      if (prev.includes(tag)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((value) => value !== tag);
+      }
+
+      return [...prev, tag];
+    });
   };
 
   const joinRoom = () => {
@@ -89,6 +104,12 @@ export default function LobbyPage() {
   const filteredCards = selectedTag
     ? baseCharacters.filter((c) => c.anime === selectedTag)
     : baseCharacters;
+
+  const selectedPoolSize = baseCharacters.filter((card) =>
+    selectedPoolTags.includes(card.anime),
+  ).length;
+
+  const canCreateRoom = selectedPoolSize >= MIN_DECK_SIZE;
 
   /* ---------------- MAIN LOBBY ---------------- */
 
@@ -207,10 +228,55 @@ export default function LobbyPage() {
 
               <button
                 onClick={createRoom}
-                className="mt-6 w-full rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 py-3 font-bold text-slate-950 transition hover:translate-y-[-1px] hover:brightness-110"
+                disabled={!canCreateRoom}
+                className="mt-6 w-full rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 py-3 font-bold text-slate-950 transition hover:translate-y-[-1px] hover:brightness-110 disabled:cursor-not-allowed disabled:from-slate-600 disabled:to-slate-700 disabled:text-slate-400 disabled:hover:translate-y-0 disabled:hover:brightness-100"
               >
                 Create Private Room
               </button>
+
+              <div className="mt-5 rounded-xl border border-slate-700 bg-slate-950/70 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">
+                    Draft Pool Categories
+                  </p>
+                  <button
+                    onClick={() => setSelectedPoolTags(tags)}
+                    className="rounded-md border border-slate-600 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-300 transition hover:border-amber-300 hover:text-amber-200"
+                  >
+                    Select All
+                  </button>
+                </div>
+
+                <p className="mt-2 text-xs text-slate-400">
+                  Selected {selectedPoolTags.length}/{tags.length} franchises ({selectedPoolSize} cards)
+                </p>
+
+                {!canCreateRoom && (
+                  <p className="mt-2 text-xs text-rose-300">
+                    Select more franchises. You need at least {MIN_DECK_SIZE} cards in the draft pool.
+                  </p>
+                )}
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {tags.map((tag) => {
+                    const isSelected = selectedPoolTags.includes(tag);
+
+                    return (
+                      <button
+                        key={`pool-${tag}`}
+                        onClick={() => togglePoolTag(tag)}
+                        className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                          isSelected
+                            ? "border-amber-300 bg-amber-500/20 text-amber-200"
+                            : "border-slate-600 bg-slate-800 text-slate-300 hover:border-amber-300"
+                        }`}
+                      >
+                        {tag}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
               <div className="my-5 flex items-center gap-3">
                 <div className="h-px flex-1 bg-slate-700" />

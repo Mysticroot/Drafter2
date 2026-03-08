@@ -6,11 +6,14 @@ import { playerService } from "../services/playerService.js";
 export function registerLobbyHandlers(io: Server, socket: Socket) {
   /* ---------------- CREATE ROOM ---------------- */
 
-  socket.on("room:create", () => {
+  socket.on("room:create", (payload?: { animes?: string[] }) => {
     try {
-      console.log("[Lobby] room:create", { socketId: socket.id });
+      console.log("[Lobby] room:create", {
+        socketId: socket.id,
+        selectedAnimes: payload?.animes ?? [],
+      });
 
-      const room = roomService.createRoom(socket.id);
+      const room = roomService.createRoom(socket.id, payload?.animes ?? []);
 
       socket.join(room.id);
 
