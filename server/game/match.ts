@@ -237,5 +237,3 @@ export class Match {
     player.socketId = socketId;
   }
 }
-
-

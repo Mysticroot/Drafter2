@@ -15,16 +15,22 @@ export default function Navbar() {
 
       <div className="hidden md:flex items-center gap-8">
         <Link
-          to="/how-to-play"
+          to="/"
           className="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-widest"
         >
-          How to Play
+          Home
         </Link>
         <Link
-          to="/leaderboard"
+          to="/lobby"
           className="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-widest"
         >
-          Leaderboard
+          Lobby
+        </Link>
+        <Link
+          to="/cards"
+          className="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-widest"
+        >
+          Cards
         </Link>
         <Link
           to="/lobby"

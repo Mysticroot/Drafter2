@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
 
 import Navbar from "../components/Navbar";
@@ -10,6 +10,20 @@ import { baseCharacters } from "../assets/char";
 
 const FRANCHISE_TAGS = [...new Set(baseCharacters.map((card) => card.anime))];
 const MIN_DECK_SIZE = 10;
+const FEATURED_CHARACTER_NAMES = new Set([
+  "Monkey D. Luffy",
+  "Roronoa Zoro",
+  "Naruto Uzumaki",
+  "Sasuke Uchiha",
+  "Madara Uchiha",
+  "Goku",
+  "Vegeta",
+  "Gon Freecss",
+  "Killua Zoldyck",
+  "Asta",
+  "Yuno",
+  "Whitebeard",
+]);
 
 export default function LobbyPage() {
   const { socket, roomId, matchState } = useSocket();
@@ -101,9 +115,13 @@ export default function LobbyPage() {
 
   /* ---------------- CARD FILTER ---------------- */
 
+  const featuredCards = baseCharacters.filter((card) =>
+    FEATURED_CHARACTER_NAMES.has(card.name),
+  );
+
   const filteredCards = selectedTag
-    ? baseCharacters.filter((c) => c.anime === selectedTag)
-    : baseCharacters;
+    ? featuredCards.filter((c) => c.anime === selectedTag)
+    : featuredCards;
 
   const selectedPoolSize = baseCharacters.filter((card) =>
     selectedPoolTags.includes(card.anime),
@@ -197,6 +215,15 @@ export default function LobbyPage() {
                 ))}
               </div>
 
+              <div className="mb-5">
+                <Link
+                  to="/cards"
+                  className="inline-flex rounded-md border border-amber-300/60 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-amber-200 transition hover:bg-amber-500/20"
+                >
+                  View All Cards
+                </Link>
+              </div>
+
               {/* CARD GRID */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {filteredCards.map((card, i) => (
@@ -248,12 +275,14 @@ export default function LobbyPage() {
                 </div>
 
                 <p className="mt-2 text-xs text-slate-400">
-                  Selected {selectedPoolTags.length}/{tags.length} franchises ({selectedPoolSize} cards)
+                  Selected {selectedPoolTags.length}/{tags.length} franchises (
+                  {selectedPoolSize} cards)
                 </p>
 
                 {!canCreateRoom && (
                   <p className="mt-2 text-xs text-rose-300">
-                    Select more franchises. You need at least {MIN_DECK_SIZE} cards in the draft pool.
+                    Select more franchises. You need at least {MIN_DECK_SIZE}{" "}
+                    cards in the draft pool.
                   </p>
                 )}
 
