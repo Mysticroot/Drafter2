@@ -5,13 +5,14 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useSocket } from "../hooks/useSocket";
 import { baseCharacters } from "../assets/char";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 
 export default function LandingPage() {
   const { matchState } = useSocket();
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     fetch("https://drafter-server.onrender.com")
@@ -19,11 +20,19 @@ export default function LandingPage() {
       .catch(() => console.log("Backend waking..."));
   }, []);
 
+  useEffect(() => {
+    const updateViewport = () => setIsMobile(window.innerWidth < 640);
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
   if (matchState && matchState.phase !== "FINISHED") {
     return <Navigate to={`/game/${matchState.id}`} replace />;
   }
 
-  const heroCards = baseCharacters.slice(0, 4);
+  const heroCards = isMobile ? baseCharacters.slice(0, 3) : baseCharacters.slice(0, 4);
 
   const getTopRole = (stats: Record<string, number>) => {
     return Object.entries(stats)
@@ -31,12 +40,18 @@ export default function LandingPage() {
       .replace("_", " ");
   };
 
-  const fanPositions = [
-    { rotate: -18, x: -120, z: 10 },
-    { rotate: -7, x: -40, z: 20 },
-    { rotate: 6, x: 40, z: 30 },
-    { rotate: 18, x: 120, z: 10 },
-  ];
+  const fanPositions = isMobile
+    ? [
+        { rotate: -10, x: -52, z: 10 },
+        { rotate: 0, x: 0, z: 25 },
+        { rotate: 10, x: 52, z: 12 },
+      ]
+    : [
+        { rotate: -18, x: -120, z: 10 },
+        { rotate: -7, x: -40, z: 20 },
+        { rotate: 6, x: 40, z: 30 },
+        { rotate: 18, x: 120, z: 10 },
+      ];
 
   return (
     <div className="app-page relative min-h-screen flex flex-col overflow-hidden text-slate-100">
@@ -128,7 +143,7 @@ export default function LandingPage() {
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 to="/lobby"
-                className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl border border-amber-400/60 bg-gradient-to-r from-amber-400 to-orange-400 px-10 py-4 text-lg font-black uppercase italic tracking-tight text-slate-950 shadow-[0_0_35px_rgba(245,158,11,0.35)] transition hover:brightness-110"
+                className="btn-primary group relative inline-flex items-center justify-center overflow-hidden rounded-xl px-10 py-4 text-lg font-black uppercase italic tracking-tight transition"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Join Arena <Play size={20} fill="currentColor" />
@@ -138,7 +153,7 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          <div className="landing-fan-wrap relative h-[390px] w-full lg:h-[500px]">
+          <div className="landing-fan-wrap relative h-[320px] w-full overflow-hidden sm:h-[390px] lg:h-[500px]">
             <div className="absolute inset-0 rounded-3xl border border-slate-700/60 bg-slate-900/35 backdrop-blur-sm" />
 
             {heroCards.map((card, idx) => {
@@ -157,7 +172,7 @@ export default function LandingPage() {
                     delay: 0.4 + idx * 0.1,
                     type: "spring",
                   }}
-                  className="landing-fan-card group absolute left-1/2 top-1/2 w-44 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-2xl border border-white/10 bg-slate-900/85 p-2 shadow-2xl md:w-56"
+                  className="landing-fan-card group absolute left-1/2 top-[62%] w-36 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-2xl border border-white/10 bg-slate-900/85 p-2 shadow-2xl sm:top-1/2 sm:w-44 md:w-56"
                   style={{ zIndex: fan.z }}
                 >
                   <div className="relative flex aspect-[3/4] h-full flex-col overflow-hidden rounded-xl border border-white/5 bg-slate-950 p-3">

@@ -75,7 +75,7 @@ export default function LobbyPage() {
 
             <button
               onClick={() => navigator.clipboard.writeText(roomId)}
-              className="mt-4 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 px-5 py-2.5 font-bold text-slate-950 transition hover:brightness-110"
+              className="btn-primary mt-4 inline-flex items-center justify-center rounded-xl px-5 py-2.5 transition"
             >
               Copy Room Code
             </button>
@@ -258,7 +258,7 @@ export default function LobbyPage() {
               <button
                 onClick={createRoom}
                 disabled={!canCreateRoom}
-                className="mt-6 w-full rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 py-3 font-bold text-slate-950 transition hover:translate-y-[-1px] hover:brightness-110 disabled:cursor-not-allowed disabled:from-slate-600 disabled:to-slate-700 disabled:text-slate-400 disabled:hover:translate-y-0 disabled:hover:brightness-100"
+                className="btn-primary mt-6 w-full rounded-xl py-3 transition hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
                 Create Private Room
               </button>
@@ -336,7 +336,7 @@ export default function LobbyPage() {
                 <button
                   onClick={joinRoom}
                   disabled={!trimmedRoomId}
-                  className="rounded-xl border border-amber-300/70 bg-amber-400/90 py-3 font-semibold text-slate-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:border-slate-600 disabled:bg-slate-700 disabled:text-slate-400"
+                  className="btn-primary rounded-xl py-3 transition disabled:cursor-not-allowed"
                 >
                   Join Room
                 </button>

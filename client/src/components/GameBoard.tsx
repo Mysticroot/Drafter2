@@ -121,9 +121,15 @@ export default function GameBoard() {
         </button>
       </header>
 
-      <main className="relative z-10 flex-1 grid grid-cols-1 gap-4 sm:gap-6 p-3 sm:p-5 lg:grid-cols-[minmax(14rem,1fr)_minmax(18rem,24rem)_minmax(14rem,1fr)]">
+      <main
+        className={`relative z-10 flex-1 grid gap-2 sm:gap-4 p-2 sm:p-4 ${
+          isFinishedPhase
+            ? "grid-cols-1 md:grid-cols-[minmax(12rem,1fr)_minmax(16rem,22rem)_minmax(12rem,1fr)]"
+            : "grid-cols-[minmax(4.8rem,1fr)_minmax(11rem,1.2fr)_minmax(4.8rem,1fr)] md:grid-cols-[minmax(12rem,1fr)_minmax(16rem,22rem)_minmax(12rem,1fr)]"
+        }`}
+      >
         {!isFinishedPhase && (
-          <div className="lg:col-span-3 flex justify-center items-start h-fit">
+          <div className="col-span-3 flex justify-center items-start h-fit">
             <div
               className={`w-fit rounded-full border px-3 py-[2px] text-large font-semibold ${
                 isMyTurn
@@ -136,7 +142,7 @@ export default function GameBoard() {
           </div>
         )}
 
-        <div className="order-2 lg:order-1">
+        <div className={`order-1 md:order-1 ${isFinishedPhase ? "hidden md:block" : ""}`}>
           <PlayerPanel
             title="You"
             variant="you"
@@ -150,7 +156,7 @@ export default function GameBoard() {
         </div>
 
         {/* CENTER PANEL */}
-        <section className="order-1 lg:order-2 flex flex-col items-center justify-center gap-8">
+        <section className="order-2 md:order-2 flex flex-col items-center justify-center gap-4 sm:gap-8">
           {/* ================= FINISHED SCREEN ================= */}
           {isFinishedPhase ? (
             <div className="flex flex-col items-center gap-6 w-full">
@@ -176,7 +182,7 @@ export default function GameBoard() {
 
               <button
                 onClick={handlePlayAgain}
-                className="mt-6 px-8 py-3 rounded bg-indigo-600 hover:bg-indigo-500"
+                className="btn-game btn-game-draw mt-6 w-fit px-8 py-3"
               >
                 Play Again
               </button>
@@ -184,7 +190,24 @@ export default function GameBoard() {
           ) : (
             <>
               {/* Pending Card */}
-              <div className="w-full max-w-sm min-h-48 border-2 border-dashed border-slate-600 bg-slate-900/35 rounded-xl p-3 flex items-center justify-center">
+              <div className="sm:hidden w-full max-w-[10.5rem] min-h-44 rounded-xl border border-slate-500/70 bg-slate-900/50 p-2 flex items-center justify-center text-xs text-center">
+                {pendingCard ? (
+                  <div className="w-full">
+                    <img
+                      src={pendingCard.image}
+                      alt={pendingCard.name}
+                      className="h-32 w-full rounded-lg object-cover"
+                    />
+                    <p className="mt-2 text-[11px] font-semibold text-slate-200">
+                      {pendingCard.name}
+                    </p>
+                  </div>
+                ) : (
+                  "No Card Drawn"
+                )}
+              </div>
+
+              <div className="hidden sm:flex w-full max-w-sm min-h-44 sm:min-h-48 border-2 border-dashed border-slate-600 bg-slate-900/35 rounded-xl p-2 sm:p-3 items-center justify-center text-sm text-center">
                 {pendingCard ? (
                   <div className="w-full">
                     <CardTile card={pendingCard} />
@@ -196,11 +219,11 @@ export default function GameBoard() {
 
               {/* DRAFT BUTTONS */}
               {isDraftPhase && (
-                <div className="grid w-full max-w-md grid-cols-1 gap-3">
+                <div className="flex w-full flex-wrap justify-center gap-2 sm:gap-3">
                   <button
                     disabled={!canAssign}
                     onClick={handleAssign}
-                    className="px-6 py-3 rounded bg-emerald-600 disabled:opacity-50"
+                    className="btn-game btn-game-assign w-fit px-5 py-2.5"
                   >
                     Assign Card
                   </button>
@@ -208,7 +231,7 @@ export default function GameBoard() {
                   <button
                     disabled={!canSkip}
                     onClick={handleSkip}
-                    className="px-6 py-3 rounded bg-red-600 disabled:opacity-50"
+                    className="btn-game btn-game-skip w-fit px-5 py-2.5"
                   >
                     {myPlayer.skipUsed ? "Skip Used" : "Skip"}
                   </button>
@@ -216,7 +239,7 @@ export default function GameBoard() {
                   <button
                     disabled={!canDraw}
                     onClick={handleDraw}
-                    className="px-6 py-3 rounded bg-indigo-600 disabled:opacity-50"
+                    className="btn-game btn-game-draw w-fit px-5 py-2.5"
                   >
                     Draw Card
                   </button>
@@ -225,7 +248,7 @@ export default function GameBoard() {
 
               {/* SWAP BUTTONS */}
               {canUseSwap && (
-                <div className="grid w-full max-w-md grid-cols-1 gap-3">
+                <div className="flex w-full flex-wrap justify-center gap-2 sm:gap-3">
                   {!swapMode && (
                     <>
                       <button
@@ -233,14 +256,14 @@ export default function GameBoard() {
                           setSwapMode(true);
                           setSwapRoles([]);
                         }}
-                        className="px-6 py-3 rounded bg-red-600"
+                        className="btn-game btn-game-skip w-fit px-5 py-2.5"
                       >
                         Swap
                       </button>
 
                       <button
                         onClick={handleCancelSwap}
-                        className="px-6 py-3 rounded bg-indigo-600"
+                        className="btn-game btn-game-cancel w-fit px-5 py-2.5"
                       >
                         Cancel Swap
                       </button>
@@ -251,7 +274,7 @@ export default function GameBoard() {
                     <button
                       disabled={swapRoles.length !== 2}
                       onClick={handleConfirmSwap}
-                      className="px-6 py-3 rounded bg-yellow-600 disabled:opacity-50"
+                      className="btn-game btn-game-confirm w-fit px-5 py-2.5"
                     >
                       Confirm Swap
                     </button>
@@ -262,7 +285,7 @@ export default function GameBoard() {
           )}
         </section>
 
-        <div className="order-3 lg:order-3">
+        <div className={`order-3 md:order-3 ${isFinishedPhase ? "hidden md:block" : ""}`}>
           <PlayerPanel title="Opponent" variant="opponent" />
         </div>
       </main>

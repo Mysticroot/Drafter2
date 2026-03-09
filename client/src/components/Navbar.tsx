@@ -12,7 +12,7 @@ export default function Navbar() {
       <div className="flex items-center justify-between gap-3">
         <Link
           to="/"
-          className="flex items-center gap-2 group"
+          className="flex items-center gap-2 group shrink-0"
           onClick={() => setMobileMenuOpen(false)}
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] transition-transform group-hover:scale-110">
@@ -23,7 +23,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div className="ml-auto hidden md:flex items-center justify-end gap-6">
           <Link
             to="/"
             className="text-sm font-medium text-slate-400 hover:text-white transition-colors uppercase tracking-widest"
@@ -57,7 +57,7 @@ export default function Navbar() {
 
           <Link
             to="/lobby"
-            className="inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-amber-400 hover:bg-amber-500 hover:text-slate-950 transition-all"
+            className="btn-outline inline-flex rounded-full px-4 py-2 text-[11px] uppercase tracking-widest transition-all"
           >
             Join Arena
           </Link>
