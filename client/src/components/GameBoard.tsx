@@ -113,7 +113,9 @@ export default function GameBoard() {
           onClick={toggleTheme}
           className="theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
           aria-label="Toggle theme"
-          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          title={
+            theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+          }
         >
           {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
         </button>
@@ -157,14 +159,14 @@ export default function GameBoard() {
               </div>
 
               <div className="mt-4 grid w-full max-w-lg grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                  <div className="bg-neutral-800 px-6 py-5 rounded-lg text-center">
+                <div className="bg-neutral-800 px-6 py-5 rounded-lg text-center">
                   <p className="text-sm text-neutral-400">Your Score</p>
                   <p className="text-2xl font-semibold text-emerald-400">
                     {myScore}
                   </p>
                 </div>
 
-                  <div className="bg-neutral-800 px-6 py-5 rounded-lg text-center">
+                <div className="bg-neutral-800 px-6 py-5 rounded-lg text-center">
                   <p className="text-sm text-neutral-400">Opponent Score</p>
                   <p className="text-2xl font-semibold text-red-400">
                     {opponentScore}

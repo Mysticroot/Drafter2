@@ -12,7 +12,7 @@ export default function LandingPage() {
   const { matchState } = useSocket();
   const { theme } = useTheme();
   const isLight = theme === "light";
-  
+
   useEffect(() => {
     fetch("https://drafter-server.onrender.com")
       .then(() => console.log("Backend warmed up"))
@@ -44,10 +44,9 @@ export default function LandingPage() {
         <div
           className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage:
-              isLight
-                ? "linear-gradient(rgba(15,23,42,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.08) 1px, transparent 1px)"
-                : "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundImage: isLight
+              ? "linear-gradient(rgba(15,23,42,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.08) 1px, transparent 1px)"
+              : "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
             backgroundSize: "26px 26px",
           }}
         />
@@ -136,11 +135,7 @@ export default function LandingPage() {
                 </span>
                 <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
               </Link>
-
-             
             </div>
-
-            
           </motion.div>
 
           <div className="landing-fan-wrap relative h-[390px] w-full lg:h-[500px]">
@@ -209,7 +204,6 @@ export default function LandingPage() {
             })}
           </div>
         </div>
-        
       </main>
 
       <Footer />

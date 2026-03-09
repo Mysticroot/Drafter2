@@ -227,15 +227,15 @@ export default function LobbyPage() {
               {/* CARD GRID */}
               <div className="max-h-[52rem] overflow-y-auto pr-1 md:max-h-none md:overflow-visible">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                {filteredCards.map((card, i) => (
-                  <CardTile
-                    key={i}
-                    card={{
-                      ...card,
-                      id: "preview",
-                    }}
-                  />
-                ))}
+                  {filteredCards.map((card, i) => (
+                    <CardTile
+                      key={i}
+                      card={{
+                        ...card,
+                        id: "preview",
+                      }}
+                    />
+                  ))}
                 </div>
               </div>
             </section>

@@ -1,6 +1,6 @@
 import { useSocket } from "../hooks/useSocket";
 import type { Role } from "../types/game";
-// 
+//
 interface TeamSlotProps {
   role: Role;
   variant?: "you" | "opponent";
@@ -81,41 +81,45 @@ export default function TeamSlot({
     ${isSwapSelected ? "ring-2 ring-indigo-400" : ""}
     `}
     >
-     {/* EMPTY SLOT */}
-     {!card && (
-       <div className="w-full text-center text-neutral-400">{roleLabel}</div>
-     )}
+      {/* EMPTY SLOT */}
+      {!card && (
+        <div className="w-full text-center text-neutral-400">{roleLabel}</div>
+      )}
 
-     {/* FILLED SLOT */}
-     {card && (
-       <>
-         {/* IMAGE SECTION (40%) */}
-         <div className="relative w-[40%] h-full overflow-hidden">
-           <img src={card.image} alt={card.name} className="w-full h-full object-cover" />
+      {/* FILLED SLOT */}
+      {card && (
+        <>
+          {/* IMAGE SECTION (40%) */}
+          <div className="relative w-[40%] h-full overflow-hidden">
+            <img
+              src={card.image}
+              alt={card.name}
+              className="w-full h-full object-cover"
+            />
 
-           {/* diagonal cut */}
-           <div className="absolute right-[-18px] top-0 h-full w-10 bg-neutral-800 rotate-[20deg]" />
-         </div>
+            {/* diagonal cut */}
+            <div className="absolute right-[-18px] top-0 h-full w-10 bg-neutral-800 rotate-[20deg]" />
+          </div>
 
-         {/* RIGHT SIDE CONTENT */}
-         <div className="flex items-center justify-between flex-1 px-4">
-           {/* CHARACTER INFO */}
-           <div className="flex flex-col">
-             <span className="text-sm font-semibold">{card.name}</span>
-             <span className="text-xs text-neutral-400">{card.anime}</span>
-           </div>
+          {/* RIGHT SIDE CONTENT */}
+          <div className="flex items-center justify-between flex-1 px-4">
+            {/* CHARACTER INFO */}
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">{card.name}</span>
+              <span className="text-xs text-neutral-400">{card.anime}</span>
+            </div>
 
-           {/* ROLE STAT */}
-           <div className="text-right">
-             <div className="text-xs text-neutral-400">{roleLabel}</div>
+            {/* ROLE STAT */}
+            <div className="text-right">
+              <div className="text-xs text-neutral-400">{roleLabel}</div>
 
-             <div className="text-lg font-semibold text-emerald-400">
-               {card.stats[role]}
-             </div>
-           </div>
-         </div>
-       </>
-     )}
+              <div className="text-lg font-semibold text-emerald-400">
+                {card.stats[role]}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

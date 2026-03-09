@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {  Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -41,8 +41,6 @@ export default function CardsPage() {
 
       <main className="relative z-10 flex-1 px-4 pb-10 pt-8 md:px-8">
         <div className="mx-auto max-w-7xl">
-          
-
           <section className="rounded-2xl border border-slate-700/80 bg-slate-900/70 p-5 shadow-xl backdrop-blur">
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="mt-1 text-3xl font-extrabold tracking-tight text-white md:text-4xl">

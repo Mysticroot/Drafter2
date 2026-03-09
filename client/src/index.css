@@ -1,105 +1,121 @@
 @import "tailwindcss";
 
 :root {
-	--bg-main: #02071a;
-	--bg-elevated: #0b1126;
-	--bg-soft: #111b34;
-	--text-main: #f8fafc;
-	--text-muted: #cbd5e1;
-	--text-subtle: #94a3b8;
-	--border-main: #334155;
-	--accent: #f59e0b;
-	--accent-strong: #ea580c;
+  --bg-main: #02071a;
+  --bg-elevated: #0b1126;
+  --bg-soft: #111b34;
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-subtle: #94a3b8;
+  --border-main: #334155;
+  --accent: #f59e0b;
+  --accent-strong: #ea580c;
 }
 
 :root[data-theme="light"] {
-	--bg-main: #f3f6ff;
-	--bg-elevated: #ffffff;
-	--bg-soft: #e2e8f0;
-	--text-main: #0f172a;
-	--text-muted: #334155;
-	--text-subtle: #64748b;
-	--border-main: #cbd5e1;
-	--accent: #d97706;
-	--accent-strong: #c2410c;
+  --bg-main: #f3f6ff;
+  --bg-elevated: #ffffff;
+  --bg-soft: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #334155;
+  --text-subtle: #64748b;
+  --border-main: #cbd5e1;
+  --accent: #d97706;
+  --accent-strong: #c2410c;
 }
 
 html,
 body,
 #root {
-	min-height: 100%;
+  min-height: 100%;
 }
 
 body {
-	margin: 0;
-	background: var(--bg-main);
-	color: var(--text-main);
-	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .app-page {
-	background: var(--bg-main);
-	color: var(--text-main);
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 .app-panel {
-	background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
-	border: 1px solid color-mix(in srgb, var(--border-main) 80%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-main) 80%, transparent);
 }
 
 .theme-toggle {
-	border: 1px solid color-mix(in srgb, var(--border-main) 82%, transparent);
-	background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
-	color: var(--text-main);
+  border: 1px solid color-mix(in srgb, var(--border-main) 82%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  color: var(--text-main);
 }
 
 .theme-toggle:hover {
-	border-color: color-mix(in srgb, var(--accent) 55%, var(--border-main));
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-main));
 }
 
 .theme-mobile-links {
-	border-top: 1px solid color-mix(in srgb, var(--border-main) 65%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--border-main) 65%, transparent);
 }
 
 /* Theme-safe remapping for existing Tailwind utility color classes */
 :root[data-theme="light"] [class*="bg-slate-950"],
 :root[data-theme="light"] [class*="bg-neutral-900"] {
-	background-color: color-mix(in srgb, var(--bg-elevated) 95%, transparent) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--bg-elevated) 95%,
+    transparent
+  ) !important;
 }
 
 :root[data-theme="light"] [class*="bg-slate-900"],
 :root[data-theme="light"] [class*="bg-neutral-800"] {
-	background-color: color-mix(in srgb, var(--bg-elevated) 88%, transparent) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--bg-elevated) 88%,
+    transparent
+  ) !important;
 }
 
 :root[data-theme="light"] [class*="bg-slate-800"],
 :root[data-theme="light"] [class*="bg-neutral-700"] {
-	background-color: color-mix(in srgb, var(--bg-soft) 92%, transparent) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--bg-soft) 92%,
+    transparent
+  ) !important;
 }
 
 :root[data-theme="light"] [class*="text-slate-100"],
 :root[data-theme="light"] [class*="text-white"] {
-	color: var(--text-main) !important;
+  color: var(--text-main) !important;
 }
 
 :root[data-theme="light"] [class*="text-slate-300"],
 :root[data-theme="light"] [class*="text-slate-400"],
 :root[data-theme="light"] [class*="text-neutral-400"],
 :root[data-theme="light"] [class*="text-slate-500"] {
-	color: var(--text-muted) !important;
+  color: var(--text-muted) !important;
 }
 
 :root[data-theme="light"] [class*="border-slate-"],
 :root[data-theme="light"] [class*="border-neutral-"] {
-	border-color: color-mix(in srgb, var(--border-main) 85%, transparent) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--border-main) 85%,
+    transparent
+  ) !important;
 }
 
 @media (max-width: 640px) {
-	.landing-fan-card {
-		width: 10rem !important;
-	}
+  .landing-fan-card {
+    width: 10rem !important;
+  }
 
-	.landing-fan-wrap {
-		height: 320px !important;
-	}
+  .landing-fan-wrap {
+    height: 320px !important;
+  }
 }

@@ -48,7 +48,9 @@ export default function Navbar() {
             onClick={toggleTheme}
             className="theme-toggle inline-flex h-10 w-10 items-center justify-center rounded-lg transition"
             aria-label="Toggle theme"
-            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -67,7 +69,9 @@ export default function Navbar() {
             onClick={toggleTheme}
             className="theme-toggle inline-flex h-10 w-10 items-center justify-center rounded-lg transition"
             aria-label="Toggle theme"
-            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -108,7 +112,6 @@ export default function Navbar() {
           </Link>
         </div>
       )}
-
     </nav>
   );
 }
