@@ -6,7 +6,7 @@ export default function GamePage() {
 
   if (!matchState) {
     return (
-      <div className="relative min-h-screen bg-slate-950 text-white flex items-center justify-center overflow-hidden">
+      <div className="app-page relative min-h-screen text-white flex items-center justify-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-amber-500/20 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />

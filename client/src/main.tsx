@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
 import { SocketProvider } from "./context/SocketProvider";
+import { ThemeProvider } from "./context/ThemeContext";
 
 import "./index.css";
 
@@ -14,8 +15,10 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <BrowserRouter>
-    <SocketProvider>
-      <App />
-    </SocketProvider>
+    <ThemeProvider>
+      <SocketProvider>
+        <App />
+      </SocketProvider>
+    </ThemeProvider>
   </BrowserRouter>,
 );

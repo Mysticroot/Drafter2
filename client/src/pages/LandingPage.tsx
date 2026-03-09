@@ -5,9 +5,19 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useSocket } from "../hooks/useSocket";
 import { baseCharacters } from "../assets/char";
+import { useEffect } from "react";
+import { useTheme } from "../context/ThemeContext";
 
 export default function LandingPage() {
   const { matchState } = useSocket();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+  
+  useEffect(() => {
+    fetch("https://drafter-server.onrender.com")
+      .then(() => console.log("Backend warmed up"))
+      .catch(() => console.log("Backend waking..."));
+  }, []);
 
   if (matchState && matchState.phase !== "FINISHED") {
     return <Navigate to={`/game/${matchState.id}`} replace />;
@@ -29,17 +39,26 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-[#02071a] text-slate-100">
+    <div className="app-page relative min-h-screen flex flex-col overflow-hidden text-slate-100">
       <div className="pointer-events-none absolute inset-0 z-0">
         <div
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+              isLight
+                ? "linear-gradient(rgba(15,23,42,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.08) 1px, transparent 1px)"
+                : "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
             backgroundSize: "26px 26px",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#030a24] via-[#02071a] to-[#02071a]" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: isLight
+              ? "linear-gradient(to bottom, #f7faff, #edf3ff 45%, #e8efff)"
+              : "linear-gradient(to bottom, #030a24, #02071a 45%, #02071a)",
+          }}
+        />
 
         <motion.div
           animate={{
@@ -66,7 +85,7 @@ export default function LandingPage() {
 
       <Navbar />
 
-      <main className="relative z-10 flex flex-1 items-center px-6 py-10 lg:px-10 lg:py-16">
+      <main className="relative z-10 flex flex-1 items-center px-4 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-16">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -84,7 +103,11 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <h1 className="text-5xl font-black italic leading-[0.86] tracking-tighter text-white md:text-7xl lg:text-8xl">
+            <h1
+              className={`text-5xl font-black italic leading-[0.86] tracking-tighter md:text-7xl lg:text-8xl ${
+                isLight ? "text-slate-900" : "text-white"
+              }`}
+            >
               Assemble.
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500">
@@ -94,7 +117,11 @@ export default function LandingPage() {
               Dominate.
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-relaxed text-slate-300 md:text-2xl">
+            <p
+              className={`mt-7 max-w-2xl text-lg leading-relaxed md:text-2xl ${
+                isLight ? "text-slate-700" : "text-slate-300"
+              }`}
+            >
               The ultimate head-to-head anime drafting arena. Build your squad,
               master the swap phase, and outsmart your opponent in real-time.
             </p>
@@ -116,7 +143,7 @@ export default function LandingPage() {
             
           </motion.div>
 
-          <div className="relative h-[390px] w-full lg:h-[500px]">
+          <div className="landing-fan-wrap relative h-[390px] w-full lg:h-[500px]">
             <div className="absolute inset-0 rounded-3xl border border-slate-700/60 bg-slate-900/35 backdrop-blur-sm" />
 
             {heroCards.map((card, idx) => {
@@ -135,7 +162,7 @@ export default function LandingPage() {
                     delay: 0.4 + idx * 0.1,
                     type: "spring",
                   }}
-                  className="group absolute left-1/2 top-1/2 w-48 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-2xl border border-white/10 bg-slate-900/85 p-2 shadow-2xl md:w-56"
+                  className="landing-fan-card group absolute left-1/2 top-1/2 w-44 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-2xl border border-white/10 bg-slate-900/85 p-2 shadow-2xl md:w-56"
                   style={{ zIndex: fan.z }}
                 >
                   <div className="relative flex aspect-[3/4] h-full flex-col overflow-hidden rounded-xl border border-white/5 bg-slate-950 p-3">
@@ -147,7 +174,7 @@ export default function LandingPage() {
                       <img
                         src={card.image}
                         alt={card.name}
-                        className="h-full w-full object-cover grayscale transition duration-500 group-hover:grayscale-0"
+                        className="h-full w-full object-cover transition duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
                       <div className="absolute bottom-2 left-2">

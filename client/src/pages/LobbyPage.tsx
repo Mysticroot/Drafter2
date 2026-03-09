@@ -45,7 +45,7 @@ export default function LobbyPage() {
 
   if (roomId && !matchState) {
     return (
-      <div className="relative min-h-screen flex flex-col overflow-hidden bg-slate-950 text-slate-100">
+      <div className="app-page relative min-h-screen flex flex-col overflow-hidden text-slate-100">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-amber-500/20 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -132,7 +132,7 @@ export default function LobbyPage() {
   /* ---------------- MAIN LOBBY ---------------- */
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-slate-950 text-slate-100">
+    <div className="app-page relative min-h-screen flex flex-col overflow-hidden text-slate-100">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-amber-500/15 blur-3xl" />
         <div className="absolute bottom-0 left-[-4rem] h-80 w-80 rounded-full bg-sky-500/10 blur-3xl" />
@@ -179,7 +179,7 @@ export default function LobbyPage() {
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_360px]">
             {/* LEFT SIDE */}
-            <section className="rounded-2xl border border-slate-700/80 bg-slate-900/70 p-5 shadow-xl backdrop-blur">
+            <section className="order-2 xl:order-1 rounded-2xl border border-slate-700/80 bg-slate-900/70 p-5 shadow-xl backdrop-blur">
               <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <h3 className="text-xl font-bold text-white">Character Pool</h3>
                 <p className="text-sm text-slate-400">
@@ -225,7 +225,8 @@ export default function LobbyPage() {
               </div>
 
               {/* CARD GRID */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+              <div className="max-h-[52rem] overflow-y-auto pr-1 md:max-h-none md:overflow-visible">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {filteredCards.map((card, i) => (
                   <CardTile
                     key={i}
@@ -235,11 +236,12 @@ export default function LobbyPage() {
                     }}
                   />
                 ))}
+                </div>
               </div>
             </section>
 
             {/* RIGHT PANEL */}
-            <aside className="h-fit rounded-2xl border border-slate-700/80 bg-slate-900/80 p-6 shadow-xl backdrop-blur">
+            <aside className="order-1 xl:order-2 h-fit rounded-2xl border border-slate-700/80 bg-slate-900/80 p-6 shadow-xl backdrop-blur">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300/90">
                 Matchmaking
               </p>

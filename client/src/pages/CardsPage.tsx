@@ -30,7 +30,7 @@ export default function CardsPage() {
   });
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-slate-950 text-slate-100">
+    <div className="app-page relative min-h-screen flex flex-col overflow-hidden text-slate-100">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-amber-500/15 blur-3xl" />
         <div className="absolute bottom-0 left-[-4rem] h-80 w-80 rounded-full bg-sky-500/10 blur-3xl" />

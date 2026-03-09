@@ -72,15 +72,15 @@ export default function TeamSlot({
 
   const roleLabel = role.replace("_", " ");
 
- return (
-   <div
-     onClick={handleClick}
-     className={`flex items-center rounded border h-20 overflow-hidden transition
+  return (
+    <div
+      onClick={handleClick}
+      className={`flex items-center rounded border h-20 overflow-hidden transition
     ${card ? "bg-neutral-800 border-neutral-600" : "bg-neutral-900 border-neutral-700"}
     ${isSelected ? "ring-2 ring-yellow-400" : ""}
     ${isSwapSelected ? "ring-2 ring-indigo-400" : ""}
     `}
-   >
+    >
      {/* EMPTY SLOT */}
      {!card && (
        <div className="w-full text-center text-neutral-400">{roleLabel}</div>
@@ -91,7 +91,7 @@ export default function TeamSlot({
        <>
          {/* IMAGE SECTION (40%) */}
          <div className="relative w-[40%] h-full overflow-hidden">
-           <img src={card.image} className="w-full h-full object-cover" />
+           <img src={card.image} alt={card.name} className="w-full h-full object-cover" />
 
            {/* diagonal cut */}
            <div className="absolute right-[-18px] top-0 h-full w-10 bg-neutral-800 rotate-[20deg]" />
@@ -116,6 +116,6 @@ export default function TeamSlot({
          </div>
        </>
      )}
-   </div>
- );
+    </div>
+  );
 }

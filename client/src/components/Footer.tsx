@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="relative z-10 border-t border-slate-800/50 bg-slate-950/50 px-8 py-6 backdrop-blur-sm">
+    <footer className="app-panel relative z-10 border-t px-4 sm:px-8 py-6 backdrop-blur-sm">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="text-xs text-slate-500 uppercase tracking-widest">
           © 2024 ANIME DRAFT ARENA. ALL RIGHTS RESERVED.
