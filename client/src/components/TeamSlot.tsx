@@ -77,10 +77,10 @@ export default function TeamSlot({
   return (
     <div
       onClick={handleClick}
-      className={`relative flex items-center rounded border h-16 sm:h-20 overflow-hidden transition
+      className={`relative mx-auto flex w-full max-w-[22rem] items-center rounded border h-20 sm:h-20 overflow-visible transition sm:mx-0 sm:max-w-none
     ${card ? "bg-neutral-800 border-neutral-600" : "bg-neutral-900 border-neutral-700"}
     ${isInteractive ? "cursor-pointer" : "cursor-default"}
-    ${isSelected ? "ring-2 ring-amber-300 border-amber-200 bg-amber-500/20 shadow-[0_0_20px_rgba(251,191,36,0.55)]" : ""}
+    ${isSelected ? "ring-2 ring-amber-300 border-amber-200 bg-amber-500/20 shadow-[0_0_0_1px_rgba(251,191,36,0.75),0_0_20px_rgba(251,191,36,0.55)]" : ""}
     ${isSwapSelected ? "ring-2 ring-indigo-400" : ""}
     `}
     >

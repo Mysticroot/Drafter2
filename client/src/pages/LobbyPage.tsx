@@ -26,7 +26,7 @@ const FEATURED_CHARACTER_NAMES = new Set([
 ]);
 
 export default function LobbyPage() {
-  const { socket, roomId, matchState } = useSocket();
+  const { socket, roomId, matchState, resetMatch } = useSocket();
 
   const [roomIdInput, setRoomIdInput] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -78,6 +78,16 @@ export default function LobbyPage() {
               className="btn-primary mt-4 inline-flex items-center justify-center rounded-xl px-5 py-2.5 transition"
             >
               Copy Room Code
+            </button>
+
+            <button
+              onClick={() => {
+                socket?.emit("room:destroy");
+                resetMatch();
+              }}
+              className="btn-outline mt-3 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-rose-200 border-rose-400/60 hover:bg-rose-500/15"
+            >
+              Destroy Room
             </button>
 
             <p className="mt-6 text-sm text-slate-400">

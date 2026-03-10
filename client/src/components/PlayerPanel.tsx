@@ -27,10 +27,10 @@ export default function PlayerPanel({
   setSwapRoles,
 }: PlayerPanelProps) {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 height-full">
       <h2 className="text-lg font-semibold text-center">{title}</h2>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 ">
         {ROLES.map((role) => (
           <TeamSlot
             key={role}

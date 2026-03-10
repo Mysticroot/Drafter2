@@ -188,6 +188,14 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    const onRoomDestroyed = ({ message }: { message: string }) => {
+      console.warn("[SocketProvider] room:destroyed", {
+        socketId: socket.id,
+        message,
+      });
+      resetMatch();
+    };
+
     const onMatchStart = ({ matchState }: { matchState: MatchState }) =>
       onMatchStateEvent("match:start", matchState);
 
@@ -210,6 +218,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     socket.on("match:update", onMatchUpdate);
     socket.on("reconnect:failed", onReconnectFailed);
     socket.on("error", onServerError);
+    socket.on("room:destroyed", onRoomDestroyed);
 
     if (!socket.connected) {
       console.log("[SocketProvider] connecting socket");
@@ -233,6 +242,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       socket.off("match:sync", onMatchSync);
       socket.off("draft:update", onDraftUpdate);
       socket.off("match:update", onMatchUpdate);
+      socket.off("room:destroyed", onRoomDestroyed);
     };
   }, []);
 

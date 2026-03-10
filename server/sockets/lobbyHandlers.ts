@@ -90,6 +90,39 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     }
   });
 
+  /* ---------------- DESTROY ROOM ---------------- */
+
+  socket.on("room:destroy", () => {
+    try {
+      const room = roomService.getRoomBySocket(socket.id);
+
+      if (!room) {
+        throw new Error("Room not found");
+      }
+
+      if (room.players[0] !== socket.id) {
+        throw new Error("Only the room host can destroy the room");
+      }
+
+      io.to(room.id).emit("room:destroyed", {
+        message: "Room was destroyed by host",
+      });
+
+      roomService.closeRoom(room.id);
+
+      console.log("[Lobby] room:destroy", {
+        roomId: room.id,
+        socketId: socket.id,
+      });
+    } catch (err) {
+      console.error("[Lobby] room:destroy failed", {
+        socketId: socket.id,
+        message: (err as Error).message,
+      });
+      socket.emit("error", { message: (err as Error).message });
+    }
+  });
+
   /* ---------------- PLAYER RECONNECT ---------------- */
 
   socket.on("player:reconnect", ({ roomId, playerId }) => {

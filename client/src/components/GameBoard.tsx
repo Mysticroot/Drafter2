@@ -225,7 +225,7 @@ export default function GameBoard() {
           ) : (
             <>
               {/* Pending Card */}
-              <div className="sm:hidden w-full max-w-[9.5rem] min-h-36 rounded-xl border border-slate-500/70 bg-slate-900/50 p-2 flex items-center justify-center text-xs text-center">
+              <div className="sm:hidden w-full max-w-[9.5rem] mt-45 min-h-36 rounded-xl border border-slate-500/70 bg-slate-900/50 p-2 flex items-center justify-center text-xs text-center">
                 {pendingCard ? (
                   <div className="w-full">
                     <img
@@ -242,7 +242,7 @@ export default function GameBoard() {
                 )}
               </div>
 
-              <div className="hidden sm:flex w-full max-w-sm min-h-44 sm:min-h-48 border-2 border-dashed border-slate-600 bg-slate-900/35 rounded-xl p-2 sm:p-3 items-center justify-center text-sm text-center">
+              <div className="hidden sm:flex w-full mt-20  max-w-sm min-h-44 sm:min-h-48 border-2 border-dashed border-slate-600 bg-slate-900/35 rounded-xl p-2 sm:p-3 items-center justify-center text-sm text-center">
                 {pendingCard ? (
                   <div className="w-full">
                     <CardTile card={pendingCard} />
