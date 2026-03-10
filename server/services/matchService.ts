@@ -1,18 +1,13 @@
 import { Match } from "../game/match.js";
+import { repositories } from "../repositories/index.js";
 
 class MatchService {
-  private matches: Map<string, Match>;
-
-  constructor() {
-    this.matches = new Map();
-  }
-
   // -------------------
   // Create new match
   // -------------------
   createMatch(selectedAnimes: string[] = []): Match {
     const match = new Match(selectedAnimes);
-    this.matches.set(match.getState().id, match);
+    repositories.match.save(match);
     return match;
   }
 
@@ -20,21 +15,21 @@ class MatchService {
   // Get match by ID
   // -------------------
   getMatch(matchId: string): Match | undefined {
-    return this.matches.get(matchId);
+    return repositories.match.getById(matchId);
   }
 
   // -------------------
   // Remove match
   // -------------------
   removeMatch(matchId: string) {
-    this.matches.delete(matchId);
+    repositories.match.delete(matchId);
   }
 
   // -------------------
   // Get all matches (debugging)
   // -------------------
   getAllMatches(): Match[] {
-    return Array.from(this.matches.values());
+    return repositories.match.list();
   }
 }
 

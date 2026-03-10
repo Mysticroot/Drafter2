@@ -1,29 +1,15 @@
-interface PlayerConnection {
-  playerId: string;
-  socketId: string;
-}
+import { repositories } from "../repositories/index.js";
 
 class PlayerService {
-  private socketToPlayer: Map<string, string>;
-  private playerToSocket: Map<string, string>;
-
-  constructor() {
-    this.socketToPlayer = new Map();
-    this.playerToSocket = new Map();
-  }
-
   // -------------------
   // Register Player
   // -------------------
   registerPlayer(playerId: string, socketId: string) {
-    const previousSocketId = this.playerToSocket.get(playerId);
+    const previousSocketId = repositories.playerConnection.getSocketIdByPlayer(
+      playerId,
+    );
 
-    if (previousSocketId && previousSocketId !== socketId) {
-      this.socketToPlayer.delete(previousSocketId);
-    }
-
-    this.socketToPlayer.set(socketId, playerId);
-    this.playerToSocket.set(playerId, socketId);
+    repositories.playerConnection.bindPlayerSocket(playerId, socketId);
 
     console.log("[PlayerService] registerPlayer", {
       playerId,
@@ -36,21 +22,21 @@ class PlayerService {
   // Get PlayerId from socket
   // -------------------
   getPlayerId(socketId: string): string | undefined {
-    return this.socketToPlayer.get(socketId);
+    return repositories.playerConnection.getPlayerIdBySocket(socketId);
   }
 
   // -------------------
   // Get SocketId from player
   // -------------------
   getSocketId(playerId: string): string | undefined {
-    return this.playerToSocket.get(playerId);
+    return repositories.playerConnection.getSocketIdByPlayer(playerId);
   }
 
   // -------------------
   // Remove Player
   // -------------------
   removePlayer(socketId: string) {
-    const playerId = this.socketToPlayer.get(socketId);
+    const playerId = repositories.playerConnection.getPlayerIdBySocket(socketId);
 
     if (!playerId) return;
 
@@ -59,17 +45,13 @@ class PlayerService {
       playerId,
     });
 
-    this.socketToPlayer.delete(socketId);
-
-    // Avoid deleting a newer socket mapping for the same player.
-    if (this.playerToSocket.get(playerId) === socketId) {
-      this.playerToSocket.delete(playerId);
-    }
+    repositories.playerConnection.unbindSocket(socketId);
 
     console.log("[PlayerService] removePlayer done", {
       socketId,
       playerId,
-      remainingSocketForPlayer: this.playerToSocket.get(playerId),
+      remainingSocketForPlayer:
+        repositories.playerConnection.getSocketIdByPlayer(playerId),
     });
   }
 }

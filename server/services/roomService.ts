@@ -1,25 +1,14 @@
 import { v4 as uuid } from "uuid";
 import { matchService } from "./matchService.js";
 import { getDeckCardCount } from "../game/deck.js";
+import { repositories } from "../repositories/index.js";
+import type { RoomRecord } from "../repositories/types/entities.js";
 
 const MIN_DECK_SIZE = 10;
 
-interface Room {
-  id: string;
-  matchId: string;
-  players: string[]; // socketIds
-  selectedAnimes: string[];
-}
+type Room = RoomRecord;
 
 class RoomService {
-  private rooms: Map<string, Room>;
-  private socketToRoom: Map<string, string>;
-
-  constructor() {
-    this.rooms = new Map();
-    this.socketToRoom = new Map();
-  }
-
   // -------------------
   // Create Room
   // -------------------
@@ -42,8 +31,8 @@ class RoomService {
       selectedAnimes,
     };
 
-    this.rooms.set(roomId, room);
-    this.socketToRoom.set(socketId, roomId);
+    repositories.room.save(room);
+    repositories.room.bindSocketToRoom(socketId, roomId);
 
     match.addPlayer(socketId);
 
@@ -54,7 +43,7 @@ class RoomService {
   // Join Room
   // -------------------
   joinRoom(roomId: string, socketId: string): Room {
-    const room = this.rooms.get(roomId);
+    const room = repositories.room.getById(roomId);
 
     if (!room) {
       throw new Error("Room not found");
@@ -65,7 +54,7 @@ class RoomService {
     }
 
     room.players.push(socketId);
-    this.socketToRoom.set(socketId, roomId);
+    repositories.room.bindSocketToRoom(socketId, roomId);
 
     const match = matchService.getMatch(room.matchId);
 
@@ -82,24 +71,21 @@ class RoomService {
   // Get Room By Socket
   // -------------------
   getRoomBySocket(socketId: string): Room | undefined {
-    const roomId = this.socketToRoom.get(socketId);
-    if (!roomId) return undefined;
-
-    return this.rooms.get(roomId);
+    return repositories.room.getBySocket(socketId);
   }
 
   // -------------------
   // Get Room
   // -------------------
   getRoom(roomId: string): Room | undefined {
-    return this.rooms.get(roomId);
+    return repositories.room.getById(roomId);
   }
 
   // -------------------
   // Rebind Socket To Room
   // -------------------
   rebindSocket(roomId: string, previousSocketId: string, newSocketId: string) {
-    const room = this.rooms.get(roomId);
+    const room = repositories.room.getById(roomId);
     if (!room) return;
 
     console.log("[RoomService] rebindSocket start", {
@@ -117,8 +103,8 @@ class RoomService {
       room.players.push(newSocketId);
     }
 
-    this.socketToRoom.delete(previousSocketId);
-    this.socketToRoom.set(newSocketId, roomId);
+    repositories.room.unbindSocket(previousSocketId);
+    repositories.room.bindSocketToRoom(newSocketId, roomId);
 
     console.log("[RoomService] rebindSocket done", {
       roomId,
@@ -130,10 +116,10 @@ class RoomService {
   // Remove Player
   // -------------------
   removePlayer(socketId: string) {
-    const roomId = this.socketToRoom.get(socketId);
+    const roomId = repositories.room.getRoomIdBySocket(socketId);
     if (!roomId) return;
 
-    const room = this.rooms.get(roomId);
+    const room = repositories.room.getById(roomId);
     if (!room) return;
 
     console.log("Removing player socket:", socketId);
@@ -146,7 +132,7 @@ class RoomService {
 
     room.players = room.players.filter((id) => id !== socketId);
 
-    this.socketToRoom.delete(socketId);
+    repositories.room.unbindSocket(socketId);
 
     console.log("[RoomService] removePlayer done", {
       roomId,
@@ -157,21 +143,21 @@ class RoomService {
     // allow reconnect window
 
     setTimeout(() => {
-      const r = this.rooms.get(roomId);
-      if (!r) return;
+      const activeRoom = repositories.room.getById(roomId);
+      if (!activeRoom) return;
 
-      if (r.players.length > 0) {
+      if (activeRoom.players.length > 0) {
         console.log("Player already reconnected, keeping room", {
           roomId,
-          roomPlayers: [...r.players],
+          roomPlayers: [...activeRoom.players],
         });
         return;
       }
 
       console.log("Deleting empty room:", roomId);
 
-      matchService.removeMatch(r.matchId);
-      this.rooms.delete(roomId);
+      matchService.removeMatch(activeRoom.matchId);
+      repositories.room.delete(roomId);
     }, 15000);
   }
 
@@ -179,7 +165,7 @@ class RoomService {
   // Close Room Immediately
   // -------------------
   closeRoom(roomId: string) {
-    const room = this.rooms.get(roomId);
+    const room = repositories.room.getById(roomId);
     if (!room) return;
 
     console.log("[RoomService] closeRoom", {
@@ -189,11 +175,11 @@ class RoomService {
     });
 
     for (const socketId of room.players) {
-      this.socketToRoom.delete(socketId);
+      repositories.room.unbindSocket(socketId);
     }
 
     matchService.removeMatch(room.matchId);
-    this.rooms.delete(roomId);
+    repositories.room.delete(roomId);
   }
 }
 
