@@ -2,6 +2,28 @@
 
 This document explains the full project flow (client + server), all socket events, what each event reads/writes, and the main entity types.
 
+## 0) Working Log (Ongoing)
+
+Last updated: **2026-03-10**
+
+### Current implemented state
+
+- End-to-end 2-player draft flow is implemented: lobby/create/join, draft, swap, scoring, and finish.
+- Reconnect flow is implemented with identity validation using `roomId + playerId` and socket rebind.
+- Client receives state from `match:start`, `draft:update`, `match:update`, and `match:sync`.
+- Server-side active socket handlers are currently `room:create`, `room:join`, `player:reconnect`, `draft:draw`, `draft:assign`, `draft:skip`, `draft:swap`, `swap:finalize`, and `disconnect`.
+
+### Known implementation notes
+
+- `match:get` exists in `server/sockets/matchHandlers.ts` but is not currently registered in `socketRegistry.ts`.
+- Game route parameter currently differs from navigation payload (`/game/:roomId` route while navigation uses `matchState.id`), and the page relies on context state.
+
+### Update rule for this file
+
+- Append a dated bullet under this section whenever a feature, contract, or behavior changes.
+- Keep event names and payload contracts aligned with actual socket handler code.
+- Keep this document as the source-of-truth snapshot of current project behavior.
+
 ## 1) High-Level Runtime Flow
 
 ```mermaid
