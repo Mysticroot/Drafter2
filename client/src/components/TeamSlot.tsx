@@ -71,7 +71,8 @@ export default function TeamSlot({
   };
 
   const roleLabel = role.replace("_", " ");
-  const isInteractive = canSelectDraft || (matchState.phase === "SWAP" && swapMode);
+  const isInteractive =
+    canSelectDraft || (matchState.phase === "SWAP" && swapMode);
 
   return (
     <div

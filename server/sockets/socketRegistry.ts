@@ -4,7 +4,7 @@ import { registerDraftHandlers } from "./draftHandlers.js";
 import { registerResultHandlers } from "./resultHandlers.js";
 import { roomService } from "../services/roomService.js";
 import { playerService } from "../services/playerService.js";
-// import { registerMatchHandlers } from "./matchHandlers.js"; // 👈 ADD
+import { registerMatchHandlers } from "./matchHandlers.js";
 
 export default function registerSocketHandlers(io: Server) {
   io.on("connection", (socket: Socket) => {
@@ -14,7 +14,7 @@ export default function registerSocketHandlers(io: Server) {
     registerLobbyHandlers(io, socket);
     registerDraftHandlers(io, socket);
     registerResultHandlers(io, socket);
-    // registerMatchHandlers(socket); // 👈 ADD
+    registerMatchHandlers(io, socket);
 
     socket.on("disconnect", () => {
       console.log("[SocketRegistry] disconnected", { socketId: socket.id });

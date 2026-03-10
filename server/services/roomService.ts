@@ -174,6 +174,27 @@ class RoomService {
       this.rooms.delete(roomId);
     }, 15000);
   }
+
+  // -------------------
+  // Close Room Immediately
+  // -------------------
+  closeRoom(roomId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) return;
+
+    console.log("[RoomService] closeRoom", {
+      roomId,
+      matchId: room.matchId,
+      players: [...room.players],
+    });
+
+    for (const socketId of room.players) {
+      this.socketToRoom.delete(socketId);
+    }
+
+    matchService.removeMatch(room.matchId);
+    this.rooms.delete(roomId);
+  }
 }
 
 export const roomService = new RoomService();

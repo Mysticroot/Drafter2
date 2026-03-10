@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import PlayerPanel from "./PlayerPanel";
@@ -93,6 +93,29 @@ export default function GameBoard() {
     navigate("/lobby");
   };
 
+  const handleExitMatch = () => {
+    if (!socket) return;
+    socket.emit("match:exit");
+    resetMatch();
+    navigate("/lobby");
+  };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onMatchEnded = ({ message }: { message: string }) => {
+      resetMatch();
+      window.alert(message);
+      navigate("/lobby");
+    };
+
+    socket.on("match:ended", onMatchEnded);
+
+    return () => {
+      socket.off("match:ended", onMatchEnded);
+    };
+  }, [socket, resetMatch, navigate]);
+
   const myScore = myPlayer.totalScore ?? 0;
   const opponentScore = opponent.totalScore ?? 0;
   const didWin = matchState.winner === playerId;
@@ -108,21 +131,31 @@ export default function GameBoard() {
       {/* HEADER */}
       <header className="relative z-10 flex min-h-16 items-center justify-between gap-3 px-4 sm:px-6 border-b border-slate-700/80 bg-slate-900/40 backdrop-blur">
         <div className="text-sm sm:text-base">Phase: {matchState.phase}</div>
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
-          aria-label="Toggle theme"
-          title={
-            theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-          }
-        >
-          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleExitMatch}
+            className="btn-outline rounded-lg px-3 py-1.5 text-xs uppercase tracking-wide"
+          >
+            Exit Match
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="theme-toggle inline-flex h-9 w-9 items-center justify-center rounded-lg transition"
+            aria-label="Toggle theme"
+            title={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
+          >
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+        </div>
       </header>
 
       <main
-        className={`relative z-10 flex-1 grid gap-2 sm:gap-4 p-2 sm:p-4 ${
+        className={`relative z-10 flex-1 grid content-start items-start gap-2 sm:gap-4 px-2 pb-2 pt-4 sm:p-4 md:content-normal md:items-stretch ${
           isFinishedPhase
             ? "grid-cols-1 md:grid-cols-[minmax(12rem,1fr)_minmax(16rem,22rem)_minmax(12rem,1fr)]"
             : "grid-cols-[minmax(4.8rem,1fr)_minmax(11rem,1.2fr)_minmax(4.8rem,1fr)] md:grid-cols-[minmax(12rem,1fr)_minmax(16rem,22rem)_minmax(12rem,1fr)]"
@@ -142,7 +175,9 @@ export default function GameBoard() {
           </div>
         )}
 
-        <div className={`order-1 md:order-1 ${isFinishedPhase ? "hidden md:block" : ""}`}>
+        <div
+          className={`order-1 md:order-1 self-start ${isFinishedPhase ? "hidden md:block" : ""}`}
+        >
           <PlayerPanel
             title="You"
             variant="you"
@@ -156,7 +191,7 @@ export default function GameBoard() {
         </div>
 
         {/* CENTER PANEL */}
-        <section className="order-2 md:order-2 flex flex-col items-center justify-center gap-4 sm:gap-8">
+        <section className="order-2 md:order-2 flex flex-col items-center justify-start md:justify-center gap-3 sm:gap-8 self-start">
           {/* ================= FINISHED SCREEN ================= */}
           {isFinishedPhase ? (
             <div className="flex flex-col items-center gap-6 w-full">
@@ -190,13 +225,13 @@ export default function GameBoard() {
           ) : (
             <>
               {/* Pending Card */}
-              <div className="sm:hidden w-full max-w-[10.5rem] min-h-44 rounded-xl border border-slate-500/70 bg-slate-900/50 p-2 flex items-center justify-center text-xs text-center">
+              <div className="sm:hidden w-full max-w-[9.5rem] min-h-36 rounded-xl border border-slate-500/70 bg-slate-900/50 p-2 flex items-center justify-center text-xs text-center">
                 {pendingCard ? (
                   <div className="w-full">
                     <img
                       src={pendingCard.image}
                       alt={pendingCard.name}
-                      className="h-32 w-full rounded-lg object-cover"
+                      className="h-24 w-full rounded-lg object-cover"
                     />
                     <p className="mt-2 text-[11px] font-semibold text-slate-200">
                       {pendingCard.name}
@@ -285,7 +320,9 @@ export default function GameBoard() {
           )}
         </section>
 
-        <div className={`order-3 md:order-3 ${isFinishedPhase ? "hidden md:block" : ""}`}>
+        <div
+          className={`order-3 md:order-3 self-start ${isFinishedPhase ? "hidden md:block" : ""}`}
+        >
           <PlayerPanel title="Opponent" variant="opponent" />
         </div>
       </main>
