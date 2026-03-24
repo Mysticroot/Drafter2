@@ -1,6 +1,6 @@
 import { Link, Navigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { Play } from "lucide-react";
+import { Link2, Play, Shuffle, Sparkles, Trophy, Users } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useSocket } from "../hooks/useSocket";
@@ -32,7 +32,9 @@ export default function LandingPage() {
     return <Navigate to={`/game/${matchState.id}`} replace />;
   }
 
-  const heroCards = isMobile ? baseCharacters.slice(0, 3) : baseCharacters.slice(0, 4);
+  const heroCards = isMobile
+    ? baseCharacters.slice(0, 3)
+    : baseCharacters.slice(0, 4);
 
   const getTopRole = (stats: Record<string, number>) => {
     return Object.entries(stats)
@@ -52,6 +54,33 @@ export default function LandingPage() {
         { rotate: 6, x: 40, z: 30 },
         { rotate: 18, x: 120, z: 10 },
       ];
+
+  const featureItems = [
+    {
+      title: "Private Room Multiplayer",
+      description:
+        "Create a private room link, share it with a friend, and start a real-time draft battle instantly.",
+      icon: Link2,
+    },
+    {
+      title: "Anime Dream Roster",
+      description:
+        "Draft from fan-favorite anime legends and build a lineup that matches your playstyle.",
+      icon: Sparkles,
+    },
+    {
+      title: "Live Draft Decisions",
+      description:
+        "Take turns picking and swapping cards under pressure while adapting to your opponent's strategy.",
+      icon: Shuffle,
+    },
+    {
+      title: "Competitive Results",
+      description:
+        "Score your final team, compare role strength, and prove who assembled the stronger squad.",
+      icon: Trophy,
+    },
+  ];
 
   return (
     <div className="app-page relative min-h-screen flex flex-col overflow-hidden text-slate-100">
@@ -220,6 +249,64 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
+
+      <section className="relative z-10 px-4 pb-12 sm:px-6 sm:pb-16 lg:px-10 lg:pb-20">
+        <div className="mx-auto w-full max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="mb-8 flex items-center gap-3"
+          >
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-amber-500/40 bg-amber-500/15 text-amber-400">
+              <Users size={18} />
+            </div>
+            <h2
+              className={`text-2xl font-black italic tracking-tight sm:text-3xl ${
+                isLight ? "text-slate-900" : "text-white"
+              }`}
+            >
+              Why Players Love Drafter
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {featureItems.map(({ title, description, icon: Icon }, idx) => (
+              <motion.article
+                key={title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.55, delay: idx * 0.08 }}
+                className={`rounded-2xl border p-5 backdrop-blur-sm sm:p-6 ${
+                  isLight
+                    ? "border-slate-300/70 bg-white/70"
+                    : "border-slate-700/60 bg-slate-900/45"
+                }`}
+              >
+                <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/35 bg-amber-500/10 text-amber-400">
+                  <Icon size={18} />
+                </div>
+                <h3
+                  className={`text-lg font-black italic tracking-tight sm:text-xl ${
+                    isLight ? "text-slate-900" : "text-white"
+                  }`}
+                >
+                  {title}
+                </h3>
+                <p
+                  className={`mt-2 text-sm leading-relaxed sm:text-base ${
+                    isLight ? "text-slate-700" : "text-slate-300"
+                  }`}
+                >
+                  {description}
+                </p>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>

@@ -4,10 +4,11 @@ This document explains the full project flow (client + server), all socket event
 
 ## 0) Working Log (Ongoing)
 
-Last updated: **2026-03-11**
+Last updated: **2026-03-24**
 
 ### Timeline updates
 
+- **2026-03-24:** Expanded landing page with a dedicated feature section under the hero area describing private room multiplayer, anime roster drafting, live draft/swap decision flow, and competitive results.
 - **2026-03-11:** Added canonical entity inventory and proposed PostgreSQL schema blueprint (hybrid relational + JSONB) for upcoming DB migration.
 - **2026-03-11:** Stabilization pass completed on server state ownership.
 - Added repository abstraction layer at `server/repositories` with in-memory adapters.
@@ -276,6 +277,7 @@ This section defines the current entities used by runtime logic and a pragmatic 
 ### Tables (hybrid model for fast migration)
 
 1. `matches`
+
 - `id UUID PRIMARY KEY`
 - `phase match_phase NOT NULL`
 - `current_turn_player_id UUID NULL`
@@ -285,6 +287,7 @@ This section defines the current entities used by runtime logic and a pragmatic 
 - `updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`
 
 2. `rooms`
+
 - `id UUID PRIMARY KEY`
 - `match_id UUID NOT NULL UNIQUE REFERENCES matches(id) ON DELETE CASCADE`
 - `host_player_id UUID NULL`
@@ -294,6 +297,7 @@ This section defines the current entities used by runtime logic and a pragmatic 
 - `updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`
 
 3. `players`
+
 - `id UUID PRIMARY KEY`
 - `match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE`
 - `room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE`
@@ -307,6 +311,7 @@ This section defines the current entities used by runtime logic and a pragmatic 
 - `updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`
 
 4. `player_connections`
+
 - `player_id UUID PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE`
 - `socket_id TEXT NOT NULL UNIQUE`
 - `room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE`
